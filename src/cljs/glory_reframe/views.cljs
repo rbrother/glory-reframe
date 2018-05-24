@@ -1,6 +1,6 @@
 (ns glory-reframe.views
   (:require [re-frame.core :as re-frame]
-            [glory-reframe.map-svg :as map-svg]))
+            [glory-reframe.views.map-svg :as map-svg]))
 
 (defn board
   ( [ ] (board {}) )

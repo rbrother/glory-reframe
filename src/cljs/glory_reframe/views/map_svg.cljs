@@ -1,10 +1,9 @@
 (ns glory-reframe.views.map-svg
-  (:require [clojure.string :as str])
-  (:use clojure-common.utils)
-  (:require [glory-reframe.systems :as systems])
-  (:require [glory-reframe.ships :as ships])
-  (:require [glory-reframe.views.svg :as svg])
-  (:require [glory-reframe.map]) )
+  (:require [clojure.string :as str]
+            [glory-reframe.systems :as systems]
+            [glory-reframe.ships :as ships]
+            [glory-reframe.views.svg :as svg]
+            [glory-reframe.map]) )
 
 (defn- default-ship-locs [ planets-count ship-count ]
   (cond
@@ -100,11 +99,11 @@
              [ min-corner max-corner :as bounds] (bounding-rect map-pieces)
              svg-size (mul-vec (rect-size bounds) scale)
              planet-to-flag (fn [ { id :id controller :controller } ]
-                              { :id id :location (glory-of-empires.map/find-planet-loc board id)
+                              { :id id :location (glory-reframe.map/find-planet-loc board id)
                                :planet id :owner controller :type :flag } )
              system-flags (->> board vals (filter :controller) (map piece-to-flag))
              planet-flags (->> planets vals (filter :controller) (map planet-to-flag))
              all-pieces (concat (vals units) system-flags planet-flags)
-             map-with-units (glory-of-empires.map/combine-map-units map-pieces all-pieces) ]
+             map-with-units (glory-reframe.map/combine-map-units map-pieces all-pieces) ]
         (svg/svg svg-size (svg/g { :scale scale :translate (mul-vec min-corner -1.0) }
                                  (map piece-to-svg map-with-units) ))))))
