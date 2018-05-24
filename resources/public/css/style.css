@@ -1,0 +1,8 @@
+body { background-color: #202020; color: white; }
+a { color: #8080ff; }
+table { border-collapse: collapse; }
+td, th { padding: 4px; }
+
+table.data { border: 2px solid #99cc00; }
+table.data td, table.data th { border: 1px solid #a0a0a0; padding: 6px; }
+
