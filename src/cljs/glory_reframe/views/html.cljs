@@ -1,5 +1,5 @@
 (ns glory-reframe.views.html
-  (:require [clojure-common.utils :as utils]   ))
+  (:require [glory-reframe.utils :as utils]   ))
 
 (def resources-url "http://www.brotherus.net:81/ti3/")      ; Port 81 needed for to work locally too with Zyxel
 

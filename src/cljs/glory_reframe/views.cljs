@@ -7,8 +7,8 @@
   ( [ opts ]
     (if (number? opts) (board { :scale opts })
       ; TODO: Reduce dependencies to only the relevant parts of game-state to prevent unnecessary updates
-      (let [ board @(re-frame/subscribe [:game]) ]
-        (map-svg/render game opts)    ))))
+      (let [ game @(re-frame/subscribe [:game]) ]
+        (map-svg/render-map game opts)    ))))
 
 (defn main-panel []
   (let [name (re-frame/subscribe [:name])]

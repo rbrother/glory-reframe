@@ -46,7 +46,7 @@
            (contains? races/all-races race) ] }
   (let [ { [ width height :as tile-size ] :image-size individual-ships? :individual-ids } (all-unit-types type)
          center-shift [ 0 (* -0.5 height) ] ; Only need to center vertically. Horizontal centering done at group level
-         final-loc (map round-any (map + center-shift loc))
+         final-loc (map utils/round-any (map + center-shift loc))
          id-label (fn [] (svg/double-text (string/upper-case (name id)) [ 0 (+ 20 height) ] { :size 20 }))
          count-label (fn [ count ] (svg/double-text (str count) [ width 40 ] { :size 45 } )) ]
     (svg/g { :translate final-loc }
@@ -88,7 +88,7 @@
       (and (not ship?) (planets loc)) { :location (board/find-planet-loc board loc) :planet loc }
       ; :a1 (system-loc) for ground-units when only 1 planet in the system
       (and (not ship?) (board loc)) { :location loc :planet (first ((board loc) :planets)) }
-      :else (throw (Exception. (str "Cannot resolve location " loc " for unit type " unit-type)))  )))
+      :else (throw (str "Cannot resolve location " loc " for unit type " unit-type))  )))
 
 (defn- new-unit [ unit-id loc-id owner type game ]
   (merge { :id unit-id :owner owner :type type }

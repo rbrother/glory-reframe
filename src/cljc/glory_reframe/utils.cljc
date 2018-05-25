@@ -6,7 +6,7 @@
 ; General utility functions usable in any application.
 ; Move this to some general location ( %GD%/scripts...?) and user from everywere (eg. ChineseWriter)
 
-(ns clojure-common.utils
+(ns glory-reframe.utils
   (:require [clojure.string :as str]
             [clojure.set :as set]
             [clojure.test :as test]    ))

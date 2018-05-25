@@ -1,6 +1,6 @@
 (ns glory-reframe.systems
   (:require [glory-reframe.views.html :as html]
-            [clojure-common.utils :as utils]) )
+            [glory-reframe.utils :as utils]) )
 
 (def tile-width 432 )
 (def tile-height 376 )

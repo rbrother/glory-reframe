@@ -25,17 +25,17 @@
     :system (nth setup-tiles (mod tile-index 5)) } )
 
 (defn amend-tile-ids [ map-pieces ]
-  (let [ min-loc (min-pos (map :logical-pos map-pieces))
+  (let [ min-loc (utils/min-pos (map :logical-pos map-pieces))
          amend-tile-id (fn [tile] (assoc tile :id (location-id (:logical-pos tile) min-loc))) ]
     (map amend-tile-id map-pieces)))
 
 (defn- make-board [ initial-range-size piece-filter ]
   (let [ a-range (range (- initial-range-size) (inc initial-range-size)) ]
-    (->> (range2d a-range a-range)
+    (->> (utils/range2d a-range a-range)
          (filter piece-filter)
          (map (fn [ pos ] (setup-system pos (logical-distance pos))))
          (amend-tile-ids)
-         (index-by-id))))
+         (utils/index-by-id))))
 
 (defn round-board [ rings ]
   (make-board rings (fn [ pos ] (< (logical-distance pos) rings))))
@@ -43,8 +43,8 @@
 (defn rect-board [ width height ]
   (let [ [ tile-width tile-height ] systems/tile-size
          pixel-size [ (* width tile-width 0.75) (* height tile-height) ]
-         bounding-rect [ (mul-vec pixel-size -0.5) (mul-vec pixel-size 0.5) ] ]
-    (make-board (+ width height) (fn [ pos ] (inside-rect? (systems/screen-loc pos) bounding-rect)))))
+         bounding-rect [ (utils/mul-vec pixel-size -0.5) (utils/mul-vec pixel-size 0.5) ] ]
+    (make-board (+ width height) (fn [ pos ] (utils/inside-rect? (systems/screen-loc pos) bounding-rect)))))
 
 ;-------------------- map query --------------------------
 

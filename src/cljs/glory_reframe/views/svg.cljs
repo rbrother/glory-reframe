@@ -4,10 +4,10 @@
 (defn image [ [ x y ] [ width height ] url id ]
   [ :image (merge
              { :x x :y y :width width :height height :xlink:href url }
-             (if id { :onclick (str "clicked('" id "')") } {} ) ) ] )
+             (if id { :on-click #(println "Clicked") } {} ) ) ] )
 
 (defn- transform [ { loc :translate scale :scale } ]
-  (let [ translate (if loc (str "translate(" (round-any (first loc)) "," (round-any (last loc)) ")" ) "" )
+  (let [ translate (if loc (str "translate(" (utils/round-any (first loc)) "," (utils/round-any (last loc)) ")" ) "" )
          scale-str (if scale (str "scale(" scale ")") "" ) ]
     { :transform (str scale-str " " translate) } ))
 

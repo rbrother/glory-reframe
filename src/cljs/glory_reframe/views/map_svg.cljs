@@ -1,5 +1,6 @@
 (ns glory-reframe.views.map-svg
   (:require [clojure.string :as str]
+            [glory-reframe.utils :as utils]
             [glory-reframe.systems :as systems]
             [glory-reframe.ships :as ships]
             [glory-reframe.views.svg :as svg]
@@ -27,7 +28,7 @@
   (let [ planet-loc (-> system-info (:planets) (planet-id) (:loc)) ]
     (if planet-loc
       (map (fn [ loc ] (map + loc planet-loc)) [ [ 0 -30 ] [ 0 30 ] ] )
-      (throw (Exception. (str "Planet does not define location info " planet-id))))))
+      (throw (str "Planet does not define location info " planet-id)))))
 
 (defn center-group-to-loc "Moves group of ships in given position to left to center the group horizontally"
   [ group [ x y ] ]
@@ -46,7 +47,7 @@
       (if individual-ids individual-id type)))
 
 (defn- collapse-group [ [ first & rest :as group ] ]
-  (if (single? group) first
+  (if (utils/single? group) first
     (-> first (assoc :count (count group)) (dissoc :id))))
 
 (defn collapse-fighters "Allows showing multiple fighters (and GF etc.) as <Fighter><Count> instead of individual icons."
@@ -70,7 +71,7 @@
 
 (defn piece-to-svg [ { logical-pos :logical-pos system-id :system loc-id :id controller :controller
                        ships :ships planets :planets } ]
-  (let [ center (mul-vec systems/tile-size 0.5)
+  (let [ center (utils/mul-vec systems/tile-size 0.5)
          system-info (systems/get-system system-id)
          planet-count (count (or planets []))
          ships-formation [ ships (partial default-ship-locs planet-count) ]
@@ -86,18 +87,18 @@
 
 (defn bounding-rect [ map-pieces ]
   (let [ screen-locs (->> map-pieces (map :logical-pos) (map systems/screen-loc)) ]
-    [ (min-pos screen-locs) (map + (max-pos screen-locs) systems/tile-size) ] ))
+    [ (utils/min-pos screen-locs) (map + (utils/max-pos screen-locs) systems/tile-size) ] ))
 
 (defn piece-to-flag [ { id :id controller :controller } ] { :id id :location id :owner controller :type :flag } )
 
-(defn render
-  ( [ game-state ] (render game-state {} ))
+(defn render-map
+  ( [ game-state ] (render-map game-state {} ))
   ( [ { board :map planets :planets units :units :as game-state } { given-scale :scale } ]
     (if (empty? board) "No map"
       (let [ map-pieces (vals board)
              scale (or given-scale 0.5)
              [ min-corner max-corner :as bounds] (bounding-rect map-pieces)
-             svg-size (mul-vec (rect-size bounds) scale)
+             svg-size (utils/mul-vec (utils/rect-size bounds) scale)
              planet-to-flag (fn [ { id :id controller :controller } ]
                               { :id id :location (glory-reframe.map/find-planet-loc board id)
                                :planet id :owner controller :type :flag } )
@@ -105,5 +106,5 @@
              planet-flags (->> planets vals (filter :controller) (map planet-to-flag))
              all-pieces (concat (vals units) system-flags planet-flags)
              map-with-units (glory-reframe.map/combine-map-units map-pieces all-pieces) ]
-        (svg/svg svg-size (svg/g { :scale scale :translate (mul-vec min-corner -1.0) }
+        (svg/svg svg-size (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
                                  (map piece-to-svg map-with-units) ))))))
