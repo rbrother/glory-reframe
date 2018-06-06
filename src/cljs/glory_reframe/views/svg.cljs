@@ -3,7 +3,7 @@
 
 (defn image [ [ x y ] [ width height ] url id ]
   [ :image (merge
-             { :x x :y y :width width :height height :xlink:href url }
+             { :x x :y y :width width :height height :href url }
              (if id { :on-click #(println "Clicked") } {} ) ) ] )
 
 (defn- transform [ { loc :translate scale :scale } ]
@@ -24,5 +24,5 @@
     (text content [ 2 2 ] (assoc opts :color "black"))
     (text content [ 0 0 ] (assoc opts :color "white")) ] ))
 
-(defn svg [ [ width height ] & content ]
-  `[ :svg { :width ~width :height ~height :xmlns:xlink "http://www.w3.org/1999/xlink" } ~@content ] )
+(defn svg [ [ width height ] content ]
+  [ :svg { :width width :height height } content ] )

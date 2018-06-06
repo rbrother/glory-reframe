@@ -46,12 +46,18 @@
   (let [ f (fn [ [k,v] ] { (f-keys k) (f-values v) } ) ]
     (apply merge (map f (seq m)))))
 
+(declare index-simple)
+
 (defn index-single [ list-of-maps key ]
   { :test (fn [] (test/is (= {:a {:id :a, :val 6}, :b {:id :b, :val 88}}
                         (index-simple [ {:id :a :val 6} { :id :b :val 88 } ] :id ) ))) }
   (map-map-keys-values key first (set/index list-of-maps [ key ] )))
 
 (defn index-by-id [items] (index-single items :id))
+
+(defn- amend-with-id [ [id attr-map] ] (assoc attr-map :id id) )
+
+(defn vals-with-id [ big-map ] (set (map amend-with-id (seq big-map))))
 
 (defn map-map-values
     { :test (fn [] (test/is (= { :a 11 :b 21 } (map-map-values (partial + 1) { :a 10 :b 20 })))) }
