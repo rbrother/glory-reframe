@@ -1,9 +1,6 @@
 (ns glory-reframe.views.players
   (:require [clojure.string :as str]
-            [glory-reframe.utils :as utils]
             [glory-reframe.ac :as ac]
-            [glory-reframe.systems :as systems]
-            [glory-reframe.strategies :as strategies]
             [glory-reframe.races :as races]
             [glory-reframe.views.html :as html]
             [glory-reframe.ships :as ships]) )
@@ -84,12 +81,10 @@
 (defn amend-player [ { player-id :id :as player } strategies ]
   (assoc player :strategies (filter-player player-id strategies)))
 
-(defn players-html [ { planets :planets strategies :strategies players :players board :map } role ]
-  (let [amended-planets (clojure.set/join (vals planets) systems/all-planets-set)
-        amended-strategies (clojure.set/join strategies strategies/all-strategies-arr)
-        sorted-strategies (sort-by :order amended-strategies)
-        player-order (->> sorted-strategies (map :owner) (filter identity) distinct)
+; planets and strategies should be amended with full info
+(defn players-html [ { players :players board :map } planets strategies role ]
+  (let [player-order (->> strategies (map :owner) (filter identity) distinct)
         players-in-order (->> player-order (map #(players %)))
-        amended-players (->> players-in-order (map #(amend-player % amended-strategies))) ]
-    (into [:div (players-table amended-players (vals board) amended-planets)]
-          (map (partial player-html role amended-planets) amended-players))))
+        amended-players (->> players-in-order (map #(amend-player % strategies))) ]
+    (into [:div (players-table amended-players (vals board) planets)]
+          (map (partial player-html role planets) amended-players))))
