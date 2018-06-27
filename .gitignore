@@ -3,6 +3,7 @@
 /.lein-*
 /.nrepl-port
 /.repl
+/.idea
 /checkouts/
 /classes/
 /lib/
