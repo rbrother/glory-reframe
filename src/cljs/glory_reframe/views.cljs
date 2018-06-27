@@ -15,10 +15,10 @@
 (defn players-html []
   (println "rendering: players-html")
   ; Collect here all subscriptions so that the inner function players/players-html can be pure (and testable)
-  (let [ game @(re-frame/subscribe [:game])
-         planets @(re-frame/subscribe [:planets])
-         strategies @(re-frame/subscribe [:strategies]) ]
-    (players/players-html game planets strategies :admin)))
+  (let [ players @(re-frame/subscribe [:players])
+        role :admin ]
+        (into [:div (players/players-table players)]
+              (map (partial players/player-html role) players))))
 
 (defn main-panel []
   [ :div
