@@ -505,7 +505,7 @@
   [ [ :img { :src (image-url system)
             :width (int (* tile-width image-size-ratio))
             :height (int (* tile-height image-size-ratio))  } ]
-   [ { :style "vertical-align: top;" }
+   [ { :style { :vertical-align "top" } }
     [ :div (name id) ]
     (if descr [ :div descr ] "")
     (if planets (planets-info-html planets)) ] ] )

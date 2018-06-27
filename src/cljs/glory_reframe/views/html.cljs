@@ -10,7 +10,7 @@
      [ :td (first col) (rest col) ]
      [ :td col ] ))
 
-(def td-items (map (fn [item] [ :td item ])))
+(defn td-items [ items ] (map (fn [i] [ :td i ]) items))
 
 (defn- make-row-inner [ attrs cells ] [ :tr attrs (map make-col cells) ] )
 
@@ -19,10 +19,10 @@
     (make-row-inner (first row) (rest row))
     (make-row-inner {} row)))
 
-(defn table [ attrs rows ] [ :table attrs [:tbody (map make-row rows)]] )
+(defn table [ attrs rows ] [ :table attrs (into [:tbody] (map make-row rows))] )
 
-(defn ul [ items ] [ :ul (map (fn [item] [ :li item ]) items) ] )
+(defn ul [ items ] (into [:ul] (map (fn [item] [:li item]) items)))
 
-(defn ol [ items ] [ :ol (map (fn [item] [ :li item ]) items) ] )
+(defn ol [ items ] (into [:ol] (map (fn [item] [:li item]) items)))
 
-(defn color-span [ color content ] [ :span { :style (str "color: " color "; font-weight: bold;") } content ] )
+(defn color-span [ color content ] [ :span { :style { :color color :font-weight "bold" } } content ] )

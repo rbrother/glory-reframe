@@ -23,78 +23,73 @@
                          strategies :strategies } ]
   (let [ player-systems (filter-player race-id board)
         player-planets (filter-player race-id planets) ]
-    [(apply min (map :order strategies))
-     (->> strategies (map :id) (map (fn [s] [ :div s ] )))
-     (str/capitalize (name race-id))
-     (fighter-image race-id)
-     (player-flag race-id)
-     "VP"
-     cc
-     fs
-     sa
-     (count player-systems)
-     (count player-planets)
-     (->> player-planets (map :res) (reduce +))
-     (->> player-planets (map :inf) (reduce +))
-     (or tg 0)
-     "Army Res"
-     "Techs"
-     (count ac)
-     (count pc)   ]))
+    (into [ :tr ]
+          (html/td-items
+            [(apply min (map :order strategies))
+             (into [:div] (->> strategies (map :id) (map (fn [s] [:div s]))))
+             (str/capitalize (name race-id))
+             (fighter-image race-id)
+             (player-flag race-id)
+             "VP"
+             cc
+             fs
+             sa
+             (count player-systems)
+             (count player-planets)
+             (->> player-planets (map :res) (reduce +))
+             (->> player-planets (map :inf) (reduce +))
+             (or tg 0)
+             "Army Res"
+             "Techs"
+             (count ac)
+             (count pc)]))))
 
 (def players-header-items [ "Init" "Strategy" "Race" "Color" "Symbol" "VP" "CC"
                            "FS" "SA" "Systems" "Planets" "Res" "Inf" "TG" "Army Res"
                            "Tech" "AC" "PC" ])
 
-(def players-header [:tr (html/td-items players-header-items)])
+(def players-header (into [:tr] (html/td-items players-header-items)))
 
 (defn players-table [ amended-players board amended-planets ]
   (let [ rows (map #(player-row-data board amended-planets %) amended-players) ]
-    (println "players:")
-    (println amended-players)
-    (println "rows:")
-    (println rows)
-    [:table { :class "data" } [:tbody (cons players-header rows)]]   ))
+    [:table { :class "data" } (into [ :tbody ] (cons players-header rows))]  ))
 
 (defn- ac-to-html [ id ]
-  (let [ { descr :description play :play set :set } (ac/all-ac-types id) ]
-    (list (str/capitalize (name id))
-          (html/color-span "#909090" (str ": " descr " Play: " play)))  ))
+  (let [ { description :description play :play set :set } (ac/all-ac-types id) ]
+    [:span (str/capitalize (name id))
+     (html/color-span "#909090" (str ": " description " Play: " play))]   ))
 
 (defn- planet-to-html [ { id :id fresh :fresh res :res inf :inf } ]
-  (list (str/capitalize (name id)) " - " (html/color-span "green" res)
-        " + " (html/color-span "#ff4040" inf) " - "
-        (if fresh (html/color-span "#00ff00" "Ready") (html/color-span "#808080" "Exhausted")))  )
+  [:div (str/capitalize (name id)) " - " (html/color-span "green" res)
+    " + " (html/color-span "#ff4040" inf) " - "
+    (if fresh (html/color-span "#00ff00" "Ready") (html/color-span "#808080" "Exhausted"))  ]   )
 
 (defn- player-html [ role all-planets { race-id :id acs :ac } ]
   { :pre [ (not (nil? race-id)) ] }
   (let [ show-all (or (= role :game-master) (= role race-id))
         race (races/all-races race-id)
         planets (filter-player race-id all-planets) ]
-    (list
-      [ :h3 (race :name) " - " (name race-id)
-       (fighter-image race-id) (player-flag race-id) ]
-      [ :div { :style "margin-left: 1cm;" }
-       [ :p "Strategy cards: xxx, yyy" ]
-       (if show-all
-         (list "Action Cards: " (count acs) (html/ol (map ac-to-html acs)))
-         "(hidden)")
-       "Planets" (html/ol (map planet-to-html planets))
-       "Tech" (html/ol ["a" "b" "c"])
-       ]  )))
+    [ :div
+     [ :h3 (race :name) " - " (name race-id)
+      (fighter-image race-id) (player-flag race-id) ]
+     [ :div { :style { :margin-left "1cm" }  }
+      [ :p "Strategy cards: xxx, yyy" ]
+      (if show-all
+        (list "Action Cards: " (count acs) (html/ol (map ac-to-html acs)))
+        "(hidden)")
+      "Planets" (html/ol (map planet-to-html planets))
+      "Tech" (html/ol ["a" "b" "c"])
+      ]  ]    ))
 
 (defn amend-player [ { player-id :id :as player } strategies ]
   (assoc player :strategies (filter-player player-id strategies)))
 
-(defn players-html [ { planets :planets strat :strategies players :players board :map } role ]
+(defn players-html [ { planets :planets strategies :strategies players :players board :map } role ]
   (let [amended-planets (clojure.set/join (vals planets) systems/all-planets-set)
-        amended-strategies (clojure.set/join strat strategies/all-strategies-arr)
+        amended-strategies (clojure.set/join strategies strategies/all-strategies-arr)
         sorted-strategies (sort-by :order amended-strategies)
         player-order (->> sorted-strategies (map :owner) (filter identity) distinct)
         players-in-order (->> player-order (map #(players %)))
         amended-players (->> players-in-order (map #(amend-player % amended-strategies))) ]
-    (println "players:")
-    (println players)
-    [:div
-     (players-table amended-players (vals board) amended-planets)
-     (map (partial player-html role amended-planets) amended-players)]))
+    (into [:div (players-table amended-players (vals board) amended-planets)]
+          (map (partial player-html role amended-planets) amended-players))))

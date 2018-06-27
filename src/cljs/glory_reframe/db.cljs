@@ -1,8 +1,6 @@
 (ns glory-reframe.db)
 
 (def default-db
-
-
   { :name "Sandbox"
     :game-state {
         :ac-deck [   :military-foresight
