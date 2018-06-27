@@ -1,11 +1,4 @@
-(ns glory-reframe.db)
-
-(def default-db
-
-
-  { :name "Sandbox"
-    :game-state {
-        :ac-deck [   :military-foresight
+{   :sandbox {   :ac-deck [   :military-foresight
             :flank-speed
             :direct-hit
             :flank-speed
@@ -140,7 +133,32 @@
             :morale-boost ]
         :counter 26
         :gm-password ""
-        :history [   { :counter 1 }  ]
+        :history [   { :counter 1 }
+            { :command [ command/rect-board 10 5 ] :counter 2 :role :game-master :time "Mon Jul 24 21:21:58 EEST 2017" }
+            { :command [ command/round-board 3 ] :counter 3 :role :game-master :time "Mon Jul 24 21:22:03 EEST 2017" }
+            { :command [ command/set-systems-random ] :counter 4 :role :game-master :time "Mon Jul 24 21:22:09 EEST 2017" }
+            { :command [ command/ac-deck-create ] :counter 5 :role :game-master :time "Mon Jul 24 21:22:43 EEST 2017" }
+            { :command [ command/set-players :hacan "abc" :norr "xyz" :naalu "123" ] :counter 6 :role :game-master :time "Mon Jul 24 21:22:51 EEST 2017" }
+            { :command [ command/new :hacan :ca :b2 ] :counter 7 :role :hacan :time "Mon Jul 24 23:00:55 EEST 2017" }
+            { :command [ command/new :hacan :ca :b2 ] :counter 8 :role :hacan :time "Mon Jul 24 23:00:58 EEST 2017" }
+            { :command [ command/new :hacan :cr :b2 ] :counter 9 :role :hacan :time "Mon Jul 24 23:01:04 EEST 2017" }
+            { :command [ command/new 2 :gf :kobol ] :counter 10 :role :hacan :time "Mon Jul 24 23:07:55 EEST 2017" }
+            { :command [ command/new :hacan 2 :gf :suuth ] :counter 11 :role :hacan :time "Mon Jul 24 23:08:46 EEST 2017" }
+            { :command [ command/new :norr 2 :gf :cicerus ] :counter 12 :role :game-master :time "Sat Aug 26 11:20:52 EEST 2017" }
+            { :command [ command/new :norr 2 :de :cicerus ] :counter 13 :role :game-master :time "Sat Aug 26 11:21:10 EEST 2017" }
+            { :command [ command/new :norr :cr :cicerus ] :counter 14 :role :game-master :time "Sat Aug 26 11:21:25 EEST 2017" }
+            { :command [ command/new :naalu 4 :gf :sulla ] :counter 15 :role :game-master :time "Sat Aug 26 11:24:00 EEST 2017" }
+            { :command [ command/new :naalu :ca 2 :fi :e2 ] :counter 16 :role :game-master :time "Sat Aug 26 11:24:20 EEST 2017" }
+            { :command [ command/ac-get :hacan ] :counter 17 :role :game-master :time "Sat Aug 26 11:25:31 EEST 2017" }
+            { :command [ command/ac-get :naalu ] :counter 18 :role :game-master :time "Sat Aug 26 11:25:38 EEST 2017" }
+            { :command [ command/ac-get :naalu ] :counter 19 :role :game-master :time "Sat Aug 26 11:25:40 EEST 2017" }
+            { :command [ command/activate :hacan :d3 ] :counter 20 :role :game-master :time "Sun Feb 18 15:45:27 EET 2018" }
+            { :command [ command/activate :hacan :d3 ] :counter 21 :role :game-master :time "Sun Feb 18 17:15:51 EET 2018" }
+            { :command [ command/activate :hacan :d4 ] :counter 22 :role :game-master :time "Sun Feb 18 17:16:04 EET 2018" }
+            { :command [ command/activate :naalu :d4 ] :counter 23 :role :game-master :time "Sun Feb 18 17:30:33 EET 2018" }
+            { :command [ command/activate :naalu :d3 ] :counter 24 :role :game-master :time "Sun Feb 18 17:30:45 EET 2018" }
+            { :command [ command/activate :norr :a4 ] :counter 25 :role :game-master :time "Thu Mar 01 20:39:12 EET 2018" }
+            { :command [ command/activate :norr :b2 ] :counter 26 :role :game-master :time "Thu Mar 01 20:41:38 EET 2018" } ]
         :map {   :a3 { :controller :hacan :id :a3 :logical-pos [ -2 0 ] :planets #{ :kobol } :system :kobol }
             :a4 { :activated { :norr true } :id :a4 :logical-pos [ -2 1 ] :planets #{ :coorneeq :resculon } :system :coorneeq-resculon }
             :a5 { :id :a5 :logical-pos [ -2 2 ] :planets #{ :kazenoeki } :system :kazenoeki }
@@ -210,4 +228,4 @@
             :gf6 { :id :gf6 :location :b5 :owner :norr :planet :cicerus :type :gf }
             :gf7 { :id :gf7 :location :e2 :owner :naalu :planet :sulla :type :gf }
             :gf8 { :id :gf8 :location :e2 :owner :naalu :planet :sulla :type :gf }
-            :gf9 { :id :gf9 :location :e2 :owner :naalu :planet :sulla :type :gf } } } }  )
+            :gf9 { :id :gf9 :location :e2 :owner :naalu :planet :sulla :type :gf } } } }

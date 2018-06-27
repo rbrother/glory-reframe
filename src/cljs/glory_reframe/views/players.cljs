@@ -50,6 +50,9 @@
 
 (defn players-table [ amended-players board amended-planets ]
   (let [ rows (map #(player-row-data board amended-planets %) amended-players) ]
+    (println "players:")
+    (println amended-players)
+    (println "rows:")
     (println rows)
     [:table { :class "data" } [:tbody (cons players-header rows)]]   ))
 
@@ -90,6 +93,8 @@
         player-order (->> sorted-strategies (map :owner) (filter identity) distinct)
         players-in-order (->> player-order (map #(players %)))
         amended-players (->> players-in-order (map #(amend-player % amended-strategies))) ]
+    (println "players:")
+    (println players)
     [:div
      (players-table amended-players (vals board) amended-planets)
      (map (partial player-html role amended-planets) amended-players)]))
