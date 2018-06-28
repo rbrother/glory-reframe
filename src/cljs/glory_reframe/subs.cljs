@@ -2,7 +2,8 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :as re-frame]
             [glory-reframe.strategies :as strat]
-            [glory-reframe.systems :as systems]))
+            [glory-reframe.systems :as systems]
+            [glory-reframe.utils :as utils]))
 
 (re-frame/reg-sub :game-name (fn [db] (:name db)))
 
@@ -20,12 +21,14 @@
   (fn [ strategies-raw _ ]
     (sort-by :order (clojure.set/join strategies-raw strat/all-strategies-arr)    )))
 
-(re-frame/reg-sub :planets-raw (fn [ { { planets :planets } :game-state } ] planets))
+(re-frame/reg-sub :planets-raw
+                  (fn [ { { planets :glory-reframe.map/planets } :game-state } ] planets))
 
 ; Planets with amended properties
 (re-frame/reg-sub :planets
   :<- [ :planets-raw ]
   (fn [ planets-raw _ ]
+    (println (utils/pretty-pr planets-raw))
     (clojure.set/join (vals planets-raw) systems/all-planets-set)))
 
 (defn- player-controls [race-id]
@@ -50,5 +53,3 @@
            (map #(players-raw %),)
            (map #(amend-player % strategies planets board)))     )))
 
-(re-frame/reg-sub :units
-  (fn [ { { units :units} :game-state } ] units ))

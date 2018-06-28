@@ -10,12 +10,14 @@
     (if (number? opts) (board { :scale opts })
       ; TODO: Reduce dependencies to only the relevant parts of game-state to prevent unnecessary updates
       ; TODO: Render separately (first) board and then pieces
+      ; TODO: Make each tile in the pieces-map separate component for
+                       ;                better perforemance. No need for
+                       ; board-tiles since they change rarely. Unless
+                       ; when building board.
       (let [ board* @(re-frame/subscribe [:board])
             planets @(re-frame/subscribe [:planets])
             units @(re-frame/subscribe [:units])]
-        (println "---")
-        (map-svg/render-map board* planets units opts)
-        ))))
+        (map-svg/render-map board* planets units opts)   ))))
 
 (defn players-table [ ]
   (println "rendering: players-table")

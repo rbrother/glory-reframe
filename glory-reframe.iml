@@ -92,6 +92,7 @@
     <orderEntry type="library" name="Leiningen: org.clojure/google-closure-library:0.0-20170809-b9c14c6b" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/java.classpath:0.2.3" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/spec.alpha:0.1.143" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/test.check:0.10.0-alpha3" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.analyzer.jvm:0.7.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.analyzer:0.6.9" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.logging:0.3.1" level="project" />

@@ -4,7 +4,9 @@
             [glory-reframe.systems :as systems]
             [glory-reframe.ships :as ships]
             [glory-reframe.views.svg :as svg]
-            [glory-reframe.map]) )
+            [glory-reframe.map]
+            [clojure.spec.alpha :as spec]
+            [clojure.spec.test.alpha :as stest]) )
 
 (defn- default-ship-locs [ planets-count ship-count ]
   (cond
@@ -69,8 +71,9 @@
                                [ units (partial planet-units-locs system-info planet-id) ] ) ]
     (map planetary-formation planets)))
 
-(defn piece-to-svg [ { logical-pos :logical-pos system-id :system loc-id :id controller :controller
-                       ships :ships planets :planets } ]
+(defn piece-to-svg [ { logical-pos :glory-reframe.map/logical-pos
+                      system-id :glory-reframe.map/system loc-id :id
+                      ships :ships planets :planets } ]
   (let [ center (utils/mul-vec systems/tile-size 0.5)
          system-info (systems/get-system system-id)
          planet-count (count (or planets []))
@@ -85,16 +88,12 @@
       (svg/g { :translate center :id (str (name system-id) "-units") } all-units-svg)
       tile-label ] )))
 
-(defn bounding-rect [ map-pieces ]
-  (let [ screen-locs (->> map-pieces (map :logical-pos) (map systems/screen-loc)) ]
-    [ (utils/min-pos screen-locs) (map + (utils/max-pos screen-locs) systems/tile-size) ] ))
-
 (defn piece-to-flag [ { id :id controller :controller } ] { :id id :location id :owner controller :type :flag } )
 
 (defn render-map [ board planets units { given-scale :scale } ]
   (let [ map-pieces (vals board)
         scale (or given-scale 0.5)
-        [ min-corner max-corner :as bounds] (bounding-rect map-pieces)
+        [ min-corner max-corner :as bounds] (glory-reframe.map/bounding-rect map-pieces)
         svg-size (utils/mul-vec (utils/rect-size bounds) scale)
         planet-to-flag (fn [ { id :id controller :controller } ]
                          { :id id :location (glory-reframe.map/find-planet-loc board id)
@@ -104,4 +103,10 @@
         all-pieces (concat (vals units) system-flags planet-flags)
         map-with-units (glory-reframe.map/combine-map-units map-pieces all-pieces) ]
     (svg/svg svg-size (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
-                             (map piece-to-svg map-with-units) ))))
+                             (map piece-to-svg map-with-units)  ))))
+
+(spec/fdef render-map
+           :args (spec/cat :board :glory-reframe.map/board
+                           :planets set?
+                           :units map?
+                           :options map?))
