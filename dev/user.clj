@@ -9,7 +9,8 @@
             [system.components.middleware :refer [new-middleware]]
             [figwheel-sidecar.repl-api :as figwheel]
             [glory-reframe.components.shell-component :refer [shell-component]]
-            [glory-reframe.config :refer [config]]))
+            [glory-reframe.config :refer [config]]
+            [clojure.spec.test.alpha :as stest]))
 
 (defn dev-system []
   (let [config (config)]
@@ -34,11 +35,4 @@
 (def reset reloaded.repl/reset)
 (def reset-all reloaded.repl/reset-all)
 
-;; deprecated, to be removed in Chestnut 1.0
-(defn run []
-  (println "(run) is deprecated, use (go)")
-  (go))
-
-(defn browser-repl []
-  (println "(browser-repl) is deprecated, use (cljs-repl)")
-  (cljs-repl))
+(stest/instrument)

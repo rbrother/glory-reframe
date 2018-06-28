@@ -4,7 +4,8 @@
             [glory-reframe.systems :as systems]
             [glory-reframe.ships :as ships]
             [glory-reframe.views.svg :as svg]
-            [glory-reframe.map]) )
+            [glory-reframe.map]
+            [clojure.spec.alpha :as spec]) )
 
 (defn- default-ship-locs [ planets-count ship-count ]
   (cond
@@ -104,4 +105,10 @@
         all-pieces (concat (vals units) system-flags planet-flags)
         map-with-units (glory-reframe.map/combine-map-units map-pieces all-pieces) ]
     (svg/svg svg-size (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
-                             (map piece-to-svg map-with-units) ))))
+                             (map piece-to-svg map-with-units)  ))))
+
+(spec/fdef render-map
+           :args (spec/cat :board :glory-reframe.map/board
+                           :planets set?
+                           :units map?
+                           :options map?))

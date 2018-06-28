@@ -13,9 +13,7 @@
       (let [ board* @(re-frame/subscribe [:board])
             planets @(re-frame/subscribe [:planets])
             units @(re-frame/subscribe [:units])]
-        (println "---")
-        (map-svg/render-map board* planets units opts)
-        ))))
+        (map-svg/render-map board* planets units opts)   ))))
 
 (defn players-table [ ]
   (println "rendering: players-table")

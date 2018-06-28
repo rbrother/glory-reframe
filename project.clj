@@ -1,11 +1,12 @@
 (defproject glory-reframe "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "Glory of Empires - Space board game"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.0-alpha4"]
                  [org.clojure/clojurescript "1.10.238" :scope "provided"]
+                 [org.clojure/test.check "0.10.0-alpha3"]
                  [com.cognitect/transit-clj "0.8.309"]
                  [ring "1.7.0-RC1"]
                  [ring/ring-defaults "0.3.1"]

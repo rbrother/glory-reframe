@@ -50,5 +50,3 @@
            (map #(players-raw %),)
            (map #(amend-player % strategies planets board)))     )))
 
-(re-frame/reg-sub :units
-  (fn [ { { units :units} :game-state } ] units ))

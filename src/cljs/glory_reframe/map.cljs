@@ -1,10 +1,21 @@
 (ns glory-reframe.map
   (:require [clojure.string :as str]
+            [clojure.spec.alpha :as spec]
             [glory-reframe.systems :as systems]
             [glory-reframe.views.svg :as svg]
             [glory-reframe.utils :as utils]  ))
 
 ; -------------------------- map ---------------------------------
+
+(spec/def ::logical-pos (spec/tuple int? int?) )            ; [ 2 -1 ]
+
+(spec/def ::system keyword? )            ; :mecatol-rex
+
+(spec/def ::planets coll? )            ; #{ :torkan :tequran }
+
+(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
+
+(spec/def ::board (spec/map-of keyword? ::board-piece ) )
 
 (def good-letters [ "a", "b", "c", "d", "e", "f", "g",
               "h", "j", "k", "m", "n", "p",
