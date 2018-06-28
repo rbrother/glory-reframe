@@ -9,19 +9,29 @@
    (println "rendering: board")
     (if (number? opts) (board { :scale opts })
       ; TODO: Reduce dependencies to only the relevant parts of game-state to prevent unnecessary updates
-      (let [ game @(re-frame/subscribe [:game]) ]
-        (map-svg/render-map game opts)    ))))
+      ; TODO: Render separately (first) board and then pieces
+      (let [ board* @(re-frame/subscribe [:board])
+            planets @(re-frame/subscribe [:planets])
+            units @(re-frame/subscribe [:units])]
+        (println "---")
+        (map-svg/render-map board* planets units opts)
+        ))))
 
-(defn players-html []
-  (println "rendering: players-html")
-  ; Collect here all subscriptions so that the inner function players/players-html can be pure (and testable)
-  (let [ players @(re-frame/subscribe [:players])
+(defn players-table [ ]
+  (println "rendering: players-table")
+  (let [ players @(re-frame/subscribe [:players]) ]
+    (players/players-table players) ))
+
+(defn players-list []
+  (println "rendering: players-list")
+  (let [ players @(re-frame/subscribe [:players] )
         role :admin ]
-        (into [:div (players/players-table players)]
-              (map (partial players/player-html role) players))))
+    (into [:div]
+          (map (partial players/player-html role) players))))
 
 (defn main-panel []
   [ :div
    [ :h1 { :style { :text-align "center" }} "---- " @(re-frame/subscribe [ :game-name ]) " ----" ]
    [ board ]  ; Could call (board) also directly, but this "react-way" improves performance if only part of content change
-   [ players-html ]        ] )
+   [ players-table ]
+   [ players-list ]        ] )
