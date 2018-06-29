@@ -17,6 +17,16 @@
 
 (spec/def ::board (spec/map-of keyword? ::board-piece ) )
 
+(spec/def ::logical-pos (spec/tuple int? int?) )            ; [ 2 -1 ]
+
+(spec/def ::system keyword? )            ; :mecatol-rex
+
+(spec/def ::planets coll? )            ; #{ :torkan :tequran }
+
+(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
+
+(spec/def ::board (spec/map-of keyword? ::board-piece ) )
+
 (def test-map
   { :name "Sandbox"
    :game-state {
