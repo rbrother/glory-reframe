@@ -1,9 +1,10 @@
 (ns glory-reframe.views.html)
 
-(def resources-url "http://www.brotherus.net:81/ti3/")      ; Port 81 needed for to work locally too with Zyxel
+#_(def resources-url "http://www.brotherus.net/ti3/")       ; in production
+(def resources-url "http://192.168.10.10/ti3/")             ; local dev
 
 (defn select [ attrs options ]
-  [ :select attrs (map (fn [opt] [ :option {} opt ]) options) ] )
+  (into [:select attrs] (map (fn [opt] [:option {} opt]) options)))
 
 (defn- make-col [ col ]
   (if (and (coll? col) (map? (first col)))

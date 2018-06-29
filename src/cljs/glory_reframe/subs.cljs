@@ -28,7 +28,6 @@
 (re-frame/reg-sub :planets
   :<- [ :planets-raw ]
   (fn [ planets-raw _ ]
-    (println (utils/pretty-pr planets-raw))
     (clojure.set/join (vals planets-raw) systems/all-planets-set)))
 
 (defn- player-controls [race-id]

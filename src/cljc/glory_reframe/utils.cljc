@@ -186,4 +186,3 @@
            (println (pretty-pr calculated))
            false ) ]
     (if (= calculated expected) true (failed))))
-
