@@ -19,7 +19,8 @@
                  [org.danielsz/system "0.4.1"]
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [http-kit "2.3.0"]
-                 [re-frame "0.10.5"]]
+                 [re-frame "0.10.5"]
+                 [binaryage/devtools "0.9.10"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-environ "1.1.0"]
