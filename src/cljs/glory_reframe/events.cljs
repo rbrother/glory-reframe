@@ -6,3 +6,13 @@
  :initialize-db
  (fn  [_ _]
    db/default-db))
+
+(re-frame/reg-event-db
+  :select-command-example
+  (fn [db [ _ command ] ]
+    (assoc db :command-to-execute command)))
+
+(re-frame/reg-event-db
+  :command-to-execute-changed
+  (fn [db [ _ command ] ]
+    (assoc db :command-to-execute command)))

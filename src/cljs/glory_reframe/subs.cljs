@@ -7,6 +7,8 @@
 
 (re-frame/reg-sub :game-name (fn [db] (:name db)))
 
+(re-frame/reg-sub :command-to-execute (fn [db] (:command-to-execute db)))
+
 (re-frame/reg-sub :board (fn [ { { board :map} :game-state } ] board))
 
 (re-frame/reg-sub :players-raw (fn [ { { players :players} :game-state } ] players))

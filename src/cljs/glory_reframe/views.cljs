@@ -8,7 +8,7 @@
 (defn board
   ( [ ] (board {}) )
   ( [ opts ]
-   {:post [ (do (println (utils/pretty-pr %)) true) ] }
+   #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
    (println "rendering: board")
     (if (number? opts) (board { :scale opts })
       ; TODO: Render separately (first) board and then pieces
@@ -34,7 +34,7 @@
           (map (partial players/player-html role) players))))
 
 (defn main-panel []
-  {:post [ (do (println (utils/pretty-pr %)) true) ] }
+  #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
   [ :div
    [ :h1 { :style { :text-align "center" }} "---- " @(re-frame/subscribe [ :game-name ]) " ----" ]
    [ command-page/command-entering ]

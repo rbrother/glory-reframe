@@ -29,7 +29,8 @@
 
 (def test-map
   { :name "Sandbox"
-   :game-state {
+    :command-to-execute nil
+    :game-state {
                 :ac-deck [   :military-foresight
                           :flank-speed
                           :direct-hit

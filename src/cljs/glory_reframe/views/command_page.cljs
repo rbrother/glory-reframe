@@ -1,9 +1,11 @@
 (ns glory-reframe.views.command-page
   (:require [glory-reframe.views.html :as html]
-           [glory-reframe.utils :as utils]))
+           [glory-reframe.utils :as utils]
+            [re-frame.core :refer [subscribe dispatch]]))
 
 (def command-examples-select
-  (html/select { :id "examples" :onchange "ExampleChanged();"}
+  (html/select {:id "examples"
+                :on-change #(dispatch [:select-command-example (-> % .-target .-value)])}
                [ "---- game setup ----"
                 "round-board 3"
                 "rect-board 10 5"
@@ -37,7 +39,10 @@
     [ :tbody
       [ :tr
        [ :td "Command" ]
-       [ :td [:input {:style {:width "300px"} :id "command" :autofocus "true"}] ]
+       [ :td
+        [:input {:type  "text" :style {:width "300px"} :id "command" :autoFocus "true"
+                 :value (or @(subscribe [:command-to-execute]) "")
+                 :on-change #(dispatch [:command-to-execute-changed (-> % .-target .-value)])}] ]
        [ :td [:button {:type "button" } "Execute"] ]
        [ :td "Examples" ]
        [ :td command-examples-select ] ]
