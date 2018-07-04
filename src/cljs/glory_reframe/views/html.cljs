@@ -1,7 +1,7 @@
 (ns glory-reframe.views.html)
 
-#_(def resources-url "http://www.brotherus.net/ti3/")       ; in production
-(def resources-url "http://192.168.10.10/ti3/")             ; local dev
+(def resources-url "http://www.brotherus.net/ti3/")       ; in production
+#_(def resources-url "http://192.168.10.10/ti3/")             ; local dev
 
 (defn select [ attrs options ]
   (into [:select attrs] (map (fn [opt] [:option {} opt]) options)))

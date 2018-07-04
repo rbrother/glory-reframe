@@ -92,7 +92,7 @@
 
 (defn- new-unit [ unit-id loc-id owner type game ]
   (merge { :id unit-id :owner owner :type type }
-        (resolve-location loc-id type game) ))
+        (resolve-location (keyword loc-id) type game) ))
 
 (defn- add-new-unit [ loc-id owner type game ]
   { :pre [ (valid-unit-type? type) ] }
@@ -111,7 +111,7 @@
 (defn- del-unit [ units id ] (dissoc units id))
 
 (defn- move-unit [ units-map unit-id loc-id game ]
-  (update units-map unit-id (fn [unit] (merge unit (resolve-location loc-id (:type unit) game))))  )
+  (update units-map unit-id (fn [unit] (merge unit (resolve-location (keyword loc-id) (:type unit) game))))  )
 
 ;-------- units commands (public) -----------
 
