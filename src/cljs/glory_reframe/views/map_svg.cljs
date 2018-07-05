@@ -71,42 +71,45 @@
                                [ units (partial planet-units-locs system-info planet-id) ] ) ]
     (map planetary-formation planets)))
 
-(defn piece-to-svg [ { logical-pos :glory-reframe.map/logical-pos
-                      system-id :glory-reframe.map/system loc-id :id
-                      ships :ships planets :planets } ]
+(defn piece-to-background-svg [ { logical-pos :glory-reframe.map/logical-pos
+                      system-id :glory-reframe.map/system loc-id :id } ]
+  (let [ system-info (systems/get-system system-id)
+        tile-label (svg/double-text (str/upper-case (name loc-id)) [ 25 200 ] { :id (str (name system-id) "-loc-label") })
+        system-id (str (name system-id) "-system") ]
+    (svg/g { :translate (systems/screen-loc logical-pos) :id system-id } [
+        (svg/image [ 0 0 ] systems/tile-size (systems/image-url system-info) (str "system-" (name loc-id)) )
+        tile-label ] )))
+
+(defn piece-to-units-svg [ { logical-pos :glory-reframe.map/logical-pos
+                      system-id :glory-reframe.map/system
+                      ships :ships planets :glory-reframe.map/planets } ]
   (let [ center (utils/mul-vec systems/tile-size 0.5)
          system-info (systems/get-system system-id)
          planet-count (count (or planets []))
          ships-formation [ ships (partial default-ship-locs planet-count) ]
          planetary-formations (planetary-formations (or planets []) system-info)
          unit-formations (conj (vec planetary-formations) ships-formation) ; [ [ units-map locs-func ] [ units-map locs-func ] ... ]
-         all-units-svg (mapcat units-svg unit-formations)
-         tile-label (svg/double-text (str/upper-case (name loc-id)) [ 25 200 ] { :id (str (name system-id) "-loc-label") })
-         system-id (str (name system-id) "-system") ]
-    (svg/g { :translate (systems/screen-loc logical-pos) :id system-id } [
-      (svg/image [ 0 0 ] systems/tile-size (systems/image-url system-info) (str "system-" (name loc-id)) )
-      (svg/g { :translate center :id (str (name system-id) "-units") } all-units-svg)
-      tile-label ] )))
+         all-units-svg (mapcat units-svg unit-formations) ]
+    (svg/g {:translate (map + (systems/screen-loc logical-pos) center) } all-units-svg )))
 
 (defn piece-to-flag [ { id :id controller :controller } ] { :id id :location id :owner controller :type :flag } )
 
-(defn render-map [ board planets units { given-scale :scale } ]
-  (let [ map-pieces (vals board)
-        scale (or given-scale 0.5)
-        [ min-corner max-corner :as bounds] (glory-reframe.map/bounding-rect map-pieces)
-        svg-size (utils/mul-vec (utils/rect-size bounds) scale)
+(defn render-map-background [ board ]
+   (into [:g] (map piece-to-background-svg (vals board))))
+
+(defn render-map-pieces [ board planets units ]
+  (let [
         planet-to-flag (fn [ { id :id controller :controller } ]
                          { :id id :location (glory-reframe.map/find-planet-loc board id)
                           :planet id :owner controller :type :flag } )
         system-flags (->> board vals (filter :controller) (map piece-to-flag))
         planet-flags (->> planets (filter :controller) (map planet-to-flag))
         all-pieces (concat (vals units) system-flags planet-flags)
-        map-with-units (glory-reframe.map/combine-map-units map-pieces all-pieces) ]
-    (svg/svg svg-size (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
-                             (map piece-to-svg map-with-units)  ))))
+        map-with-units (glory-reframe.map/combine-map-units (vals board) all-pieces) ]
+          (into [:g] (map piece-to-units-svg map-with-units))    ))
 
-(spec/fdef render-map
+
+(spec/fdef render-map-pieces
            :args (spec/cat :board :glory-reframe.map/map
                            :planets set?
-                           :units map?
-                           :options map?))
+                           :units map?  ))

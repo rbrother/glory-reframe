@@ -2,9 +2,7 @@
   (:require [glory-reframe.utils :as utils]))
 
 (defn image [ [ x y ] [ width height ] url id ]
-  [ :image (merge
-             { :x x :y y :width width :height height :href url }
-             (if id { :on-click #(println "Clicked") } {} ) ) ] )
+  [ :image { :x x :y y :width width :height height :href url } ] )
 
 (defn- transform [ { loc :translate scale :scale } ]
   (let [ translate (if loc (str "translate(" (utils/round-any (first loc)) "," (utils/round-any (last loc)) ")" ) "" )
@@ -13,7 +11,7 @@
 
 (defn g [ opts content ]
   { :pre [ (map? opts) (sequential? content) ] }
-  `[ :g ~(merge (transform opts) (select-keys opts [:id])) ~@content ] )
+  (into [ :g (merge (transform opts) (select-keys opts [:id])) ] content )   )
 
 (defn text [ content [ x y ] { color :color font :font size :size } ]
   [ :text { :x x :y y :fill (or color "white")

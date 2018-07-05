@@ -3,7 +3,18 @@
             [glory-reframe.views.map-svg :as map-svg]
             [glory-reframe.views.players :as players]
             [glory-reframe.views.command-page :as command-page]
-            [glory-reframe.utils :as utils]))
+            [glory-reframe.utils :as utils]
+            [glory-reframe.views.svg :as svg]))
+
+(defn board-background []
+  (let [ board* @(re-frame/subscribe [:board] )]
+    (map-svg/render-map-background board*)   ))
+
+(defn board-units []
+  (let [ board* @(re-frame/subscribe [:board])
+         planets @(re-frame/subscribe [:planets])
+         units @(re-frame/subscribe [:units])]
+    (map-svg/render-map-pieces board* planets units)    ))
 
 (defn board
   ( [ ] (board {}) )
@@ -17,9 +28,15 @@
                        ; board-tiles since they change rarely. Unless
                        ; when building board.
       (let [ board* @(re-frame/subscribe [:board])
-            planets @(re-frame/subscribe [:planets])
-            units @(re-frame/subscribe [:units])]
-        (map-svg/render-map board* planets units opts)   ))))
+            map-pieces (vals board*)
+            scale (or (:scale opts) 0.5)
+            [ min-corner max-corner :as bounds] (glory-reframe.map/bounding-rect map-pieces)
+            svg-size (utils/mul-vec (utils/rect-size bounds) scale) ]
+        (svg/svg svg-size
+           (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
+                  [ [ board-background ]
+                    [ board-units] ]
+                  ))))))
 
 (defn players-table [ ]
   (println "rendering: players-table")
