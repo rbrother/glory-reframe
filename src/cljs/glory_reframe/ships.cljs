@@ -76,7 +76,7 @@
   (inc (get-in game-state [ :ship-counters type ] 0)))
 
 ; Resolves into { :location :a1 :planet :aah } (planet can be also nil)
-(defn- resolve-location [ loc unit-type { board :map planets :glory-reframe.map/planets :as game } ]
+(defn- resolve-location [ loc unit-type { board :glory-reframe.map/map planets :glory-reframe.map/planets :as game } ]
   (let [ ship? (= :ship ((all-unit-types unit-type) :type))
          is-system? (contains? (set (board/all-systems game)) loc) ]
     (cond

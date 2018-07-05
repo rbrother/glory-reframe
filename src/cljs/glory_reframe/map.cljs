@@ -25,13 +25,21 @@
 
 (spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
 
-(spec/def ::board (spec/map-of keyword? ::board-piece ) )
+(spec/def ::map (spec/map-of keyword? ::board-piece ) )
+
+(spec/def ::player (spec/keys :req [ :glory-reframe.races/id ]))
+
+(spec/def ::players (spec/map-of keyword? ::player ) )
+
+(spec/def ::game-state (spec/keys :req [ ::map ::planets ::players ]))
+
+(spec/def ::app-db (spec/keys :req [ ::game-state ]))
 
 (def test-map
   { :name "Sandbox"
     :command-to-execute nil
-    :game-state {
-                :ac-deck [   :military-foresight
+    ::game-state {
+                :ac-deck [ :military-foresight
                           :flank-speed
                           :direct-hit
                           :flank-speed
@@ -51,7 +59,7 @@
                 :counter 26
                 :gm-password ""
                 :history [   { :counter 1 }  ]
-                :map {   :a3 { :controller :hacan :id :a3 ::logical-pos [ -2 0 ] ::planets #{ :kobol } ::system :kobol }
+                ::map {   :a3 { :controller :hacan :id :a3 ::logical-pos [ -2 0 ] ::planets #{ :kobol } ::system :kobol }
                       :a4 { :activated { :norr true } :id :a4 ::logical-pos [ -2 1 ] ::planets #{ :coorneeq :resculon } ::system :coorneeq-resculon }
                       :a5 { :id :a5 ::logical-pos [ -2 2 ] ::planets #{ :kazenoeki } ::system :kazenoeki }
                       :b2 { :activated { :norr true } :controller :hacan :id :b2 ::logical-pos [ -1 -1 ] ::planets #{ :sorkragh :machall } ::system :machall-sorkragh }
@@ -88,9 +96,9 @@
                           :tequran { :controller nil :id :tequran }
                           :torkan { :controller nil :id :torkan }
                           :tsion { :controller nil :id :tsion } }
-                :players {   :hacan { :ac [ :spacedock-accident ] :command-pool 0 :fleet-supply 3 :id :hacan :password "abc" :pc [  ] :strategy-alloc 2 }
-                          :naalu { :ac [ :plague :insubordination ] :command-pool 0 :fleet-supply 3 :id :naalu :password "123" :pc [  ] :strategy-alloc 2 }
-                          :norr { :ac [  ] :command-pool 1 :fleet-supply 4 :id :norr :password "xyz" :pc [  ] :strategy-alloc 3 } }
+                ::players {   :hacan { :ac [ :spacedock-accident ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :hacan :password "abc" :pc [  ] :strategy-alloc 2 }
+                          :naalu { :ac [ :plague :insubordination ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :naalu :password "123" :pc [  ] :strategy-alloc 2 }
+                          :norr { :ac [  ] :command-pool 1 :fleet-supply 4 :glory-reframe.races/id :norr :password "xyz" :pc [  ] :strategy-alloc 3 } }
                 :strategies #{
                               { :id :leadership4 :owner :norr :ready true :bonus 0 }
                               { :id :diplomacy4 :owner :norr :ready false :bonus 0 }
@@ -137,8 +145,7 @@
     [ (utils/min-pos screen-locs) (map + (utils/max-pos screen-locs) systems/tile-size) ] ))
 
 (spec/fdef bounding-rect
-           :args (spec/+ :glory-reframe.map/board-piece))
-
+           :args (spec/cat :map-pieces (spec/coll-of :glory-reframe.map/board-piece)))
 
 (defn- logical-distance [ [ logical-x logical-y ] ]
   (let [ abs-x (Math/abs logical-x)

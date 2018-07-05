@@ -106,7 +106,7 @@
                              (map piece-to-svg map-with-units)  ))))
 
 (spec/fdef render-map
-           :args (spec/cat :board :glory-reframe.map/board
+           :args (spec/cat :board :glory-reframe.map/map
                            :planets set?
                            :units map?
                            :options map?))

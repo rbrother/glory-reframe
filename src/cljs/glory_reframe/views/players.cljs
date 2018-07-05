@@ -3,14 +3,16 @@
             [glory-reframe.ac :as ac]
             [glory-reframe.races :as races]
             [glory-reframe.views.html :as html]
-            [glory-reframe.ships :as ships]) )
+            [glory-reframe.ships :as ships]
+            [glory-reframe.utils :as utils]) )
 
 (defn- fighter-image [ race-id ] [ :img { :src (ships/ship-image-url :fi race-id) } ] )
 
 (defn- player-flag [ race-id ] [ :img {:src (str html/resources-url "FlagWavy/Flag-Wavy-" (name race-id) ".png")} ] )
 
-(defn- player-row-data [ { race-id :id tg :tg ac :ac pc :pc cc :command-pool sa :strategy-alloc fs :fleet-supply
+(defn- player-row-data [ { race-id :glory-reframe.races/id tg :tg ac :ac pc :pc cc :command-pool sa :strategy-alloc fs :fleet-supply
                          strategies :strategies player-planets :planets player-systems :systems } ]
+  ;  {:post [ (do (println (utils/pretty-pr %)) true) ] }
     (into [ :tr ]
           (html/td-items
             [(apply min (map :order strategies))
@@ -52,7 +54,7 @@
     " + " (html/color-span "#ff4040" inf) " - "
     (if fresh (html/color-span "#00ff00" "Ready") (html/color-span "#808080" "Exhausted"))  ]   )
 
-(defn player-html [ role { race-id :id acs :ac planets :planets } ]
+(defn player-html [ role { race-id :glory-reframe.races/id acs :ac planets :planets } ]
   { :pre [ (not (nil? race-id)) ] }
   (let [ show-all (or (= role :game-master) (= role race-id))
         race (races/all-races race-id) ]

@@ -9,13 +9,13 @@
 
 (re-frame/reg-sub :command-to-execute (fn [db] (:command-to-execute db)))
 
-(re-frame/reg-sub :board (fn [ { { board :map} :game-state } ] board))
+(re-frame/reg-sub :board (fn [ { { board :glory-reframe.map/map} :glory-reframe.map/game-state } ] board))
 
-(re-frame/reg-sub :players-raw (fn [ { { players :players} :game-state } ] players))
+(re-frame/reg-sub :players-raw (fn [ { { players :glory-reframe.map/players} :glory-reframe.map/game-state } ] players))
 
-(re-frame/reg-sub :units (fn [ { { units :units } :game-state } ] units))
+(re-frame/reg-sub :units (fn [ { { units :units } :glory-reframe.map/game-state } ] units))
 
-(re-frame/reg-sub :strategies-raw (fn [ { { strategies :strategies } :game-state } ] strategies))
+(re-frame/reg-sub :strategies-raw (fn [ { { strategies :strategies } :glory-reframe.map/game-state } ] strategies))
 
 ; Strategies with amended properties
 (re-frame/reg-sub :strategies
@@ -24,7 +24,7 @@
     (sort-by :order (clojure.set/join strategies-raw strat/all-strategies-arr)    )))
 
 (re-frame/reg-sub :planets-raw
-                  (fn [ { { planets :glory-reframe.map/planets } :game-state } ] planets))
+                  (fn [ { { planets :glory-reframe.map/planets } :glory-reframe.map/game-state } ] planets))
 
 ; Planets with amended properties
 (re-frame/reg-sub :planets
@@ -38,7 +38,7 @@
 
 (defn- filter-player [ race-id items ] (filter (player-controls race-id) items))
 
-(defn- amend-player [ { player-id :id :as player } strategies planets board ]
+(defn- amend-player [ { player-id :glory-reframe.races/id :as player } strategies planets board ]
   (assoc player :strategies (filter-player player-id strategies)
                 :planets (filter-player player-id planets)
                 :systems (filter-player player-id board)  ))
@@ -51,6 +51,6 @@
   (fn [ [ players-raw strategies planets board ] _ ]
     (let [ player-order (->> strategies (map :owner) (filter identity) distinct) ]
       (->> player-order
-           (map #(players-raw %),)
+           (map #(players-raw %))
            (map #(amend-player % strategies planets board)))     )))
 

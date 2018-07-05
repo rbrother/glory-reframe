@@ -1,5 +1,6 @@
 (ns glory-reframe.races
-  (:require [glory-reframe.utils :as utils]))
+  (:require [glory-reframe.utils :as utils]
+            [clojure.spec.alpha :as spec]))
 
 ; see http://gameknight.com/?page_id=474
 ; Colors from https://community.fantasyflightgames.com/topic/58489-appropriate-colors/
@@ -35,3 +36,5 @@
    ] )
 
 (def all-races (utils/index-by-id all-races-arr))
+
+(spec/def ::id #(contains? all-races %))

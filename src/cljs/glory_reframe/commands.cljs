@@ -11,20 +11,20 @@
 
 ; The whole planet-list is re-created when board is modified, so board modification
 ; should not be done after game starts and there is some info on planets
-(defn- update-planets [ { board :map :as game } ]
+(defn- update-planets [ { board :glory-reframe.map/map :as game } ]
   (let [ all-planets
-        (->>  board (vals) (map :planets)
+        (->>  board (vals) (map :glory-reframe.map/planets)
               (map seq) (flatten) (remove nil?)
               (map (fn [id] { :id id :controller nil }))  ) ]
-    (assoc game :planets (utils/index-by-id all-planets))  ))
+    (assoc game :glory-reframe.map/planets (utils/index-by-id all-planets))  ))
 
 (defn- board-command [ board-func ]
-  (fn [ game & pars ] (update-planets (update game :map board-func))))
+  (fn [ game & pars ] (update-planets (update game :glory-reframe.map/map board-func))))
 
 (defn- make-board-command [ new-board ]
-  (fn [ game & pars ] (update-planets (merge game { :map new-board :ship-counters {} } ))))
+  (fn [ game & pars ] (update-planets (merge game { :glory-reframe.map/map new-board :ship-counters {} } ))))
 
-(defn player? [ game player ] (contains? (game :players) player))
+(defn player? [ game player ] (contains? (game :glory-reframe.map/players) player))
 
 (defn- player-optional-command "Command for which player role can be given as first parameter (otherwise use role)"
   [ [ possible-player & rest-pars :as pars ] inner-fn]
@@ -57,7 +57,7 @@
 ;------------- players -----------------
 
 (defn- set-players-inner [ game player-ids-and-passwords ]
-  (assoc game :players
+  (assoc game :glory-reframe.map/players
               (->> player-ids-and-passwords
                    (partition 2)
                    (map (fn [ [id pwd] ] { :id id :password pwd :ac [] :pc [] } ))

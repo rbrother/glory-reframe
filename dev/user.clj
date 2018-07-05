@@ -10,7 +10,8 @@
             [figwheel-sidecar.repl-api :as figwheel]
             [glory-reframe.components.shell-component :refer [shell-component]]
             [glory-reframe.config :refer [config]]
-            [clojure.spec.test.alpha :as stest]))
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.alpha :as spec]))
 
 (defn dev-system []
   (let [config (config)]
@@ -36,3 +37,5 @@
 (def reset-all reloaded.repl/reset-all)
 
 (stest/instrument)
+
+(spec/check-asserts true)                                   ; does not work here for clojurescript
