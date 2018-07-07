@@ -41,10 +41,9 @@
 
 (re-frame/reg-event-db
   :execute-command
-  (fn [ { command :command-to-execute game-state :glory-reframe.map/game-state :as db } [ _ _ ] ]
+  (fn [ { command :command-to-execute game-state :game-state :as db } [ _ _ ] ]
     (println "Executing command: " command)
      (let [[command-id & pars] (cljs.reader/read-string (str "[" command "]"))
            command-func (apply (get-command-fn command-id) pars)
            role :game-master]
-       (assoc db :glory-reframe.map/game-state
-                 (modify-db game-state #(command-func % role))    ))))
+       (assoc db :game-state (modify-db game-state #(command-func % role))    ))))

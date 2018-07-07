@@ -31,14 +31,14 @@
 
 (spec/def ::players (spec/map-of keyword? ::player ) )
 
-(spec/def ::game-state (spec/keys :req [ ::map ::planets ::players ]))
+(spec/def ::game-state (spec/keys :req [ ::map ::planets ] :req-un [ ::players ]))
 
-(spec/def ::app-db (spec/keys :req [ ::game-state ]))
+(spec/def ::app-db (spec/keys :req-un [ ::game-state ]))
 
 (def test-map
   { :name "Sandbox"
     :command-to-execute nil
-    ::game-state {
+    :game-state {
                 :ac-deck [ :military-foresight
                           :flank-speed
                           :direct-hit
@@ -96,7 +96,7 @@
                           :tequran { :controller nil :id :tequran }
                           :torkan { :controller nil :id :torkan }
                           :tsion { :controller nil :id :tsion } }
-                ::players {   :hacan { :ac [ :spacedock-accident ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :hacan :password "abc" :pc [  ] :strategy-alloc 2 }
+                :players {   :hacan { :ac [ :spacedock-accident ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :hacan :password "abc" :pc [  ] :strategy-alloc 2 }
                           :naalu { :ac [ :plague :insubordination ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :naalu :password "123" :pc [  ] :strategy-alloc 2 }
                           :norr { :ac [  ] :command-pool 1 :fleet-supply 4 :glory-reframe.races/id :norr :password "xyz" :pc [  ] :strategy-alloc 3 } }
                 :strategies #{

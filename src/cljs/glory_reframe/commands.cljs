@@ -24,7 +24,7 @@
 (defn- make-board-command [ new-board ]
   (fn [ game & pars ] (update-planets (merge game { :glory-reframe.map/map new-board :ship-counters {} } ))))
 
-(defn player? [ game player ] (contains? (game :glory-reframe.map/players) player))
+(defn player? [ { players :players } player ] (contains? players player))
 
 (defn- player-optional-command "Command for which player role can be given as first parameter (otherwise use role)"
   [ [ possible-player & rest-pars :as pars ] inner-fn]
@@ -57,7 +57,7 @@
 ;------------- players -----------------
 
 (defn- set-players-inner [ game player-ids-and-passwords ]
-  (assoc game :glory-reframe.map/players
+  (assoc game :players
               (->> player-ids-and-passwords
                    (partition 2)
                    (map (fn [ [id pwd] ] { :id id :password pwd :ac [] :pc [] } ))

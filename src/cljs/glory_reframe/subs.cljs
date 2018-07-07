@@ -9,13 +9,13 @@
 
 (re-frame/reg-sub :command-to-execute (fn [db] (:command-to-execute db)))
 
-(re-frame/reg-sub :board (fn [ { { board :glory-reframe.map/map} :glory-reframe.map/game-state } ] board))
+(re-frame/reg-sub :board (fn [ { { board :glory-reframe.map/map} :game-state } ] board))
 
-(re-frame/reg-sub :players-raw (fn [ { { players :glory-reframe.map/players} :glory-reframe.map/game-state } ] players))
+(re-frame/reg-sub :players-raw (fn [ { { players :players } :game-state } ] players))
 
-(re-frame/reg-sub :units (fn [ { { units :units } :glory-reframe.map/game-state } ] units))
+(re-frame/reg-sub :units (fn [ { { units :units } :game-state } ] units))
 
-(re-frame/reg-sub :strategies-raw (fn [ { { strategies :strategies } :glory-reframe.map/game-state } ] strategies))
+(re-frame/reg-sub :strategies-raw (fn [ { { strategies :strategies } :game-state } ] strategies))
 
 ; Strategies with amended properties
 (re-frame/reg-sub :strategies
@@ -24,7 +24,7 @@
     (sort-by :order (clojure.set/join strategies-raw strat/all-strategies-arr)    )))
 
 (re-frame/reg-sub :planets-raw
-                  (fn [ { { planets :glory-reframe.map/planets } :glory-reframe.map/game-state } ] planets))
+                  (fn [ { { planets :glory-reframe.map/planets } :game-state } ] planets))
 
 ; Planets with amended properties
 (re-frame/reg-sub :planets
