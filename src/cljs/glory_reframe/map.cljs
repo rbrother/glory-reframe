@@ -1,9 +1,7 @@
 (ns glory-reframe.map
-  (:require [clojure.string :as str]
-            [clojure.spec.alpha :as spec]
+  (:require [clojure.spec.alpha :as spec]
             [glory-reframe.races]
             [glory-reframe.systems :as systems]
-            [glory-reframe.views.svg :as svg]
             [glory-reframe.utils :as utils]  ))
 
 ; -------------------------- map ---------------------------------
@@ -218,20 +216,3 @@
          systems-and-locs (map vector (keys board) systems ) ]
     (reduce swap-system board systems-and-locs)))
 
-;------------------- merging of units and map (for rendering) ------------------
-
-(defn- combine-planets-units [ planets units ]
-  (let [ gather-planet-units (fn [planet-id]
-                               (filter #(= (% :planet) planet-id) units)) ]
-    (map (fn [planet] { :id planet :units (gather-planet-units planet) } ) planets)))
-
-(defn- combine-piece-units [ { piece-id :id :as piece } units ]
-  (let [ ship-in-system?
-         (fn [ { ship-loc :location planet :planet } ]
-           (and (= ship-loc piece-id) (not planet))) ]
-    (-> piece
-        (assoc :ships (filter ship-in-system? units))
-        (update ::planets combine-planets-units units)   )))
-
-(defn combine-map-units [ map-pieces units ]
-  (map (fn [piece] (combine-piece-units piece units)) map-pieces))
