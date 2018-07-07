@@ -22,7 +22,6 @@
    #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
    (println "rendering: board")
     (if (number? opts) (board { :scale opts })
-      ; TODO: Render separately (first) board and then pieces
       ; TODO: Make each tile in the pieces-map separate component for
                        ;                better perforemance. No need for
                        ; board-tiles since they change rarely. Unless

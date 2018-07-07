@@ -33,15 +33,18 @@
   (fn [db [ _ command ] ]
     (assoc db :command-to-execute command)))
 
+(defn- get-command-fn [ command-id ]
+  { :post [ (spec/assert fn? %) ] }
+  (let [command-getters (ns-publics 'glory-reframe.commands)
+        command-getter (command-getters command-id)]
+    (or command-getter (throw (str "Command function not found: " command-id)))))
+
 (re-frame/reg-event-db
   :execute-command
   (fn [ { command :command-to-execute game-state :glory-reframe.map/game-state :as db } [ _ _ ] ]
     (println "Executing command: " command)
      (let [[command-id & pars] (cljs.reader/read-string (str "[" command "]"))
-           command-func-getter (case (keyword command-id)
-                                 :move commands/move
-                                 :new commands/new
-                                 :del commands/del)
-           command-func (apply command-func-getter pars)
+           command-func (apply (get-command-fn command-id) pars)
            role :game-master]
-       (assoc db :glory-reframe.map/game-state (modify-db game-state #(command-func % role))))))
+       (assoc db :glory-reframe.map/game-state
+                 (modify-db game-state #(command-func % role))    ))))
