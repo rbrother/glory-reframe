@@ -26,11 +26,11 @@
     (= planets-count 3)
       [ [ 0 0 ] [ 90 -80 ] [ -90 -90 ] [ 90 110 ] ] ))
 
-(defn planet-units-locs [ system-info planet-id ship-count ] ; allow ship-count param to be compatible with default-ship-locs
-  (let [ planet-loc (-> system-info (:planets) (planet-id) (:loc)) ]
-    (if planet-loc
-      (map (fn [ loc ] (map + loc planet-loc)) [ [ 0 -30 ] [ 0 30 ] ] )
-      (throw (str "Planet does not define location info " planet-id)))))
+; allow ship-count param to be compatible with default-ship-locs
+(defn planet-units-locs [ { id :id planet-loc :loc :as planet } ship-count ]
+  (if planet-loc
+    (map (fn [ loc ] (map + loc planet-loc)) [ [ 0 -30 ] [ 0 30 ] ] )
+    (throw (str "Planet does not define location info " id))))
 
 (defn center-group-to-loc "Moves group of ships in given position to left to center the group horizontally"
   [ group [ x y ] ]
@@ -66,11 +66,6 @@
        (group-units group-locs-func)
        (mapcat ships/group-svg)))
 
-(defn planetary-formations [ planets system-info ]
-  (let [ planetary-formation (fn [ { planet-id :id  units :units} ]
-                               [ units (partial planet-units-locs system-info planet-id) ] ) ]
-    (map planetary-formation planets)))
-
 (defn piece-to-background-svg [ { logical-pos :glory-reframe.map/logical-pos
                       system-id :glory-reframe.map/system loc-id :id } ]
   (let [ system-info (systems/get-system system-id)
@@ -80,36 +75,19 @@
         (svg/image [ 0 0 ] systems/tile-size (systems/image-url system-info) (str "system-" (name loc-id)) )
         tile-label ] )))
 
-(defn piece-to-units-svg [ { logical-pos :glory-reframe.map/logical-pos
-                      system-id :glory-reframe.map/system
-                      ships :ships planets :glory-reframe.map/planets } ]
-  (let [ center (utils/mul-vec systems/tile-size 0.5)
-         system-info (systems/get-system system-id)
-         planet-count (count (or planets []))
-         ships-formation [ ships (partial default-ship-locs planet-count) ]
-         planetary-formations (planetary-formations (or planets []) system-info)
-         unit-formations (conj (vec planetary-formations) ships-formation) ; [ [ units-map locs-func ] [ units-map locs-func ] ... ]
-         all-units-svg (mapcat units-svg unit-formations) ]
-    (svg/g {:translate (map + (systems/screen-loc logical-pos) center) } all-units-svg )))
+(defn planet-to-units-svg [ planet+ ground-units ]
+  (let [ units-formation [ ground-units (partial planet-units-locs planet+) ]]
+    (units-svg units-formation)))
+
+(spec/fdef planet-to-units-svg
+           :args (spec/cat :planet+ :glory-reframe.map/planet :units coll?) )
+
+(defn piece-to-units-svg [ { planets :glory-reframe.map/planets } ships ]
+  (let [ planet-count (count (or planets []))
+         ships-formation [ships (partial default-ship-locs planet-count)]  ]
+    (units-svg ships-formation)))
 
 (defn piece-to-flag [ { id :id controller :controller } ] { :id id :location id :owner controller :type :flag } )
 
 (defn render-map-background [ board ]
    (into [:g] (map piece-to-background-svg (vals board))))
-
-(defn render-map-pieces [ board planets units ]
-  (let [
-        planet-to-flag (fn [ { id :id controller :controller } ]
-                         { :id id :location (glory-reframe.map/find-planet-loc board id)
-                          :planet id :owner controller :type :flag } )
-        system-flags (->> board vals (filter :controller) (map piece-to-flag))
-        planet-flags (->> planets (filter :controller) (map planet-to-flag))
-        all-pieces (concat (vals units) system-flags planet-flags)
-        map-with-units (glory-reframe.map/combine-map-units (vals board) all-pieces) ]
-          (into [:g] (map piece-to-units-svg map-with-units))    ))
-
-
-(spec/fdef render-map-pieces
-           :args (spec/cat :board :glory-reframe.map/map
-                           :planets set?
-                           :units map?  ))

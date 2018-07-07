@@ -4,17 +4,31 @@
             [glory-reframe.views.players :as players]
             [glory-reframe.views.command-page :as command-page]
             [glory-reframe.utils :as utils]
-            [glory-reframe.views.svg :as svg]))
+            [glory-reframe.views.svg :as svg]
+            [glory-reframe.systems :as systems]))
 
 (defn board-background []
-  (let [ board* @(re-frame/subscribe [:board] )]
-    (map-svg/render-map-background board*)   ))
+  (let [ board @(re-frame/subscribe [:board] )]
+    (map-svg/render-map-background board)   ))
+
+(defn planet-units [ piece-id planet-id ]
+  (let [planet+ @(re-frame/subscribe [:planet planet-id])
+        units @(re-frame/subscribe [:ground-units-at piece-id planet-id])]
+    (map-svg/planet-to-units-svg planet+ units)))
+
+(defn board-piece-units [ piece-id ]
+  #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
+  (let [ piece @(re-frame/subscribe [:board-piece piece-id])
+        ships @(re-frame/subscribe [:ships-at piece-id])
+        { logical-pos :glory-reframe.map/logical-pos planets :glory-reframe.map/planets } piece
+        center (utils/mul-vec systems/tile-size 0.5) ]
+    (svg/g {:translate (map + (systems/screen-loc logical-pos) center)}
+           (concat (map-svg/piece-to-units-svg piece ships)
+                   (mapcat (partial planet-units piece-id) planets)   ))))
 
 (defn board-units []
-  (let [ board* @(re-frame/subscribe [:board])
-         planets @(re-frame/subscribe [:planets])
-         units @(re-frame/subscribe [:units])]
-    (map-svg/render-map-pieces board* planets units)    ))
+  (let [ piece-ids @(re-frame/subscribe [:board-piece-ids]) ]
+    (into [:g] (map (fn [id] [ board-piece-units id ]) piece-ids))    ))
 
 (defn board
   ( [ ] (board {}) )
@@ -22,10 +36,6 @@
    #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
    (println "rendering: board")
     (if (number? opts) (board { :scale opts })
-      ; TODO: Make each tile in the pieces-map separate component for
-                       ;                better perforemance. No need for
-                       ; board-tiles since they change rarely. Unless
-                       ; when building board.
       (let [ board* @(re-frame/subscribe [:board])
             map-pieces (vals board*)
             scale (or (:scale opts) 0.5)
@@ -34,8 +44,7 @@
         (svg/svg svg-size
            (svg/g { :scale scale :translate (utils/mul-vec min-corner -1.0) }
                   [ [ board-background ]
-                    [ board-units] ]
-                  ))))))
+                    [ board-units] ]      ))))))
 
 (defn players-table [ ]
   (println "rendering: players-table")

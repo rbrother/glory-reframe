@@ -1,6 +1,7 @@
 (ns glory-reframe.map
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as spec]
+            [glory-reframe.races]
             [glory-reframe.systems :as systems]
             [glory-reframe.views.svg :as svg]
             [glory-reframe.utils :as utils]  ))
@@ -11,19 +12,19 @@
 
 (spec/def ::system keyword? )            ; :mecatol-rex
 
+(spec/def ::fresh boolean?)
+
+(spec/def ::id keyword?)
+
+(spec/def ::controller (spec/or :race :glory-reframe.races/id :nil nil?))
+
+(spec/def ::planet (spec/keys :req-un [ ::controller ::id ::fresh ] ))
+
 (spec/def ::planets coll? )            ; #{ :torkan :tequran }
 
 (spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
 
 (spec/def ::board (spec/map-of keyword? ::board-piece ) )
-
-(spec/def ::logical-pos (spec/tuple int? int?) )            ; [ 2 -1 ]
-
-(spec/def ::system keyword? )            ; :mecatol-rex
-
-(spec/def ::planets coll? )            ; #{ :torkan :tequran }
-
-(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
 
 (spec/def ::map (spec/map-of keyword? ::board-piece ) )
 
@@ -78,7 +79,8 @@
                       :e1 { :id :e1 ::logical-pos [ 2 -2 ] ::planets #{  } ::system :wormhole-a }
                       :e2 { :controller :naalu :id :e2 ::logical-pos [ 2 -1 ] ::planets #{ :martinez :sulla } ::system :sulla-martinez }
                       :e3 { :id :e3 ::logical-pos [ 2 0 ] ::planets #{ :sem-lore } ::system :sem-lore } }
-                ::planets {   :bellatrix { :controller nil :id :bellatrix }
+                ::planets {
+                          :bellatrix { :controller nil :id :bellatrix :fresh true }
                           :chnum { :controller nil :id :chnum :fresh true }
                           :cicerus { :controller :norr :id :cicerus :fresh true }
                           :coorneeq { :controller nil :id :coorneeq :fresh true }
@@ -87,15 +89,15 @@
                           :machall { :controller :hacan :id :machall :fresh true }
                           :martinez { :controller :naalu :id :martinez :fresh true }
                           :parzifal { :controller nil :id :parzifal :fresh true }
-                          :ptah { :controller nil :id :ptah }
-                          :resculon { :controller nil :id :resculon }
-                          :sem-lore { :controller nil :id :sem-lore }
-                          :sorkragh { :controller :hacan :id :sorkragh }
-                          :sulla { :controller :naalu :id :sulla }
-                          :suuth { :controller nil :id :suuth }
-                          :tequran { :controller nil :id :tequran }
-                          :torkan { :controller nil :id :torkan }
-                          :tsion { :controller nil :id :tsion } }
+                          :ptah { :controller nil :id :ptah :fresh false }
+                          :resculon { :controller nil :id :resculon :fresh false }
+                          :sem-lore { :controller nil :id :sem-lore :fresh false }
+                          :sorkragh { :controller :hacan :id :sorkragh :fresh false }
+                          :sulla { :controller :naalu :id :sulla :fresh false }
+                          :suuth { :controller nil :id :suuth :fresh false }
+                          :tequran { :controller nil :id :tequran :fresh false }
+                          :torkan { :controller nil :id :torkan :fresh false }
+                          :tsion { :controller nil :id :tsion :fresh false } }
                 :players {   :hacan { :ac [ :spacedock-accident ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :hacan :password "abc" :pc [  ] :strategy-alloc 2 }
                           :naalu { :ac [ :plague :insubordination ] :command-pool 0 :fleet-supply 3 :glory-reframe.races/id :naalu :password "123" :pc [  ] :strategy-alloc 2 }
                           :norr { :ac [  ] :command-pool 1 :fleet-supply 4 :glory-reframe.races/id :norr :password "xyz" :pc [  ] :strategy-alloc 3 } }
