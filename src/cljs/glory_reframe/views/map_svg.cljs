@@ -87,7 +87,5 @@
          ships-formation [ships (partial default-ship-locs planet-count)]  ]
     (units-svg ships-formation)))
 
-(defn piece-to-flag [ { id :id controller :controller } ] { :id id :location id :owner controller :type :flag } )
-
 (defn render-map-background [ board ]
    (into [:g] (map piece-to-background-svg (vals board))))

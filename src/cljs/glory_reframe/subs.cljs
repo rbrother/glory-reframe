@@ -34,6 +34,18 @@
   (fn [ [ _ loc-id ] _ ] (re-frame/subscribe [:units-at loc-id]) )
   (fn [ units _ ] (remove :planet units))    )
 
+(defn piece-to-flag [ { id :id controller :controller } ]
+  (if controller
+    [ {:id id :location id :owner controller :type :flag} ]
+    []  ))
+
+(re-frame/reg-sub :pieces-to-render-at
+  (fn [ [ _ loc-id ] _ ] [ (re-frame/subscribe [:ships-at loc-id])
+                          (re-frame/subscribe [:board-piece loc-id]) ]   )
+  (fn [ [ships board-piece] _ ]
+    (println ships board-piece)
+    (concat ships (piece-to-flag board-piece)))   )
+
 (re-frame/reg-sub :ground-units-at
   (fn [ [ _ loc-id planet ] _ ] (re-frame/subscribe [:units-at loc-id]) )
   (fn [ units [ _ loc-id planet ] ] (filter #(= planet (% :planet)) units))    )

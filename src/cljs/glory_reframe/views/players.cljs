@@ -62,9 +62,9 @@
      [ :h3 (race :name) " - " (name race-id)
       (fighter-image race-id) (player-flag race-id) ]
      [ :div { :style { :margin-left "1cm" }  }
-      [ :p "Strategy cards: xxx, yyy" ]
-      [ :p (count acs) " Action cards: "
-        (if show-all (map ac-to-html acs) "(hidden)") ]
+      [ :div "Strategy cards: xxx, yyy" ]
+      (into [ :div (count acs) " Action cards: " ]
+            (if show-all (map ac-to-html acs) ["(hidden)"]))
       "Planets" (html/ol (map planet-to-html planets))
       "Tech" (html/ol ["a" "b" "c"])
       ]  ]    ))

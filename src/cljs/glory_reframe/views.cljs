@@ -18,12 +18,12 @@
 
 (defn board-piece-units [ piece-id ]
   #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
-  (let [ piece @(re-frame/subscribe [:board-piece piece-id])
-        ships @(re-frame/subscribe [:ships-at piece-id])
+  (let [ piece @(re-frame/subscribe [ :board-piece piece-id ] )
+        space-figures @(re-frame/subscribe [ :pieces-to-render-at piece-id ] )
         { logical-pos :glory-reframe.map/logical-pos planets :glory-reframe.map/planets } piece
         center (utils/mul-vec systems/tile-size 0.5) ]
     (svg/g {:translate (map + (systems/screen-loc logical-pos) center)}
-           (concat (map-svg/piece-to-units-svg piece ships)
+           (concat (map-svg/piece-to-units-svg piece space-figures)
                    (mapcat (partial planet-units piece-id) planets)   ))))
 
 (defn board-units []
