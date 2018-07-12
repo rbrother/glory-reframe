@@ -54,7 +54,7 @@
 (defn players-list []
   (println "rendering: players-list")
   (let [ players @(re-frame/subscribe [:players] )
-        role :admin ]
+        role :game-master ]
     (into [:div]
           (map (partial players/player-html role) players))))
 

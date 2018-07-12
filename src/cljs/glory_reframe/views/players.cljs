@@ -46,7 +46,7 @@
 
 (defn- ac-to-html [ id ]
   (let [ { description :description play :play set :set } (ac/all-ac-types id) ]
-    [:span (str/capitalize (name id))
+    [:div (str/capitalize (name id))
      (html/color-span "#909090" (str ": " description " Play: " play))]   ))
 
 (defn- planet-to-html [ { id :id fresh :fresh res :res inf :inf } ]
@@ -63,9 +63,8 @@
       (fighter-image race-id) (player-flag race-id) ]
      [ :div { :style { :margin-left "1cm" }  }
       [ :p "Strategy cards: xxx, yyy" ]
-      (if show-all
-        (list "Action Cards: " (count acs) (html/ol (map ac-to-html acs)))
-        "(hidden)")
+      [ :p (count acs) " Action cards: "
+        (if show-all (map ac-to-html acs) "(hidden)") ]
       "Planets" (html/ol (map planet-to-html planets))
       "Tech" (html/ol ["a" "b" "c"])
       ]  ]    ))
