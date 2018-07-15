@@ -9,20 +9,11 @@
 
 ;------------ command helpers ---------------
 
-; The whole planet-list is re-created when board is modified, so board modification
-; should not be done after game starts and there is some info on planets
-(defn- update-planets [ { board :glory-reframe.map/map :as game } ]
-  (let [ all-planets
-        (->>  board (vals) (map :glory-reframe.map/planets)
-              (map seq) (flatten) (remove nil?)
-              (map (fn [id] { :id id :controller nil :fresh true }))  ) ]
-    (assoc game :glory-reframe.map/planets (utils/index-by-id all-planets))  ))
-
 (defn- board-command [ board-func ]
-  (fn [ game & pars ] (update-planets (update game :glory-reframe.map/map board-func))))
+  (fn [ game & pars ] (update game :glory-reframe.map/map board-func)))
 
 (defn- make-board-command [ new-board ]
-  (fn [ game & pars ] (update-planets (merge game { :glory-reframe.map/map new-board :ship-counters {} } ))))
+  (fn [ game & pars ] (merge game { :glory-reframe.map/map new-board } )))
 
 (defn player? [ { players :players } player ] (contains? players player))
 
@@ -52,7 +43,7 @@
   (board-command #(board/swap-system % [ (keyword loc-id) (keyword system-id) ] )))
 
 (defn del-system [ loc-id ]
-  (board-command #(dissoc % loc-id)))
+  (board-command #(dissoc % (keyword loc-id))))
 
 ;------------- players -----------------
 

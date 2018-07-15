@@ -16,12 +16,9 @@
 
 (spec/def ::controller (spec/or :race :glory-reframe.races/id :nil nil?))
 
-(spec/def ::planet (spec/keys :req-un [ ::controller ::id ::fresh ] ))
+(spec/def ::planet (spec/keys :req-un [ ::id ] :opt-un [ ::controller ::fresh ] ))
 
-(spec/def ::system-planets coll? )            ; #{ :torkan :tequran }
-
-(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ]
-                                   :opt-un [ ::system-planets ]  ))
+(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ] ))
 
 (spec/def ::board (spec/map-of keyword? ::board-piece ) )
 
@@ -59,24 +56,24 @@
                 :counter 26
                 :gm-password ""
                 :history [   { :counter 1 }  ]
-                ::map {   :a3 { :controller :hacan :id :a3 ::logical-pos [ -2 0 ] ::planets #{ :kobol } ::system :kobol }
-                      :a4 { :activated { :norr true } :id :a4 ::logical-pos [ -2 1 ] ::planets #{ :coorneeq :resculon } ::system :coorneeq-resculon }
-                      :a5 { :id :a5 ::logical-pos [ -2 2 ] ::planets #{ :kazenoeki } ::system :kazenoeki }
-                      :b2 { :activated { :norr true } :controller :hacan :id :b2 ::logical-pos [ -1 -1 ] ::planets #{ :sorkragh :machall } ::system :machall-sorkragh }
-                      :b3 { :id :b3 ::logical-pos [ -1 0 ] ::planets #{ :torkan :tequran } ::system :tequran-torkan }
-                      :b4 { :id :b4 ::logical-pos [ -1 1 ] ::planets #{ :suuth } ::system :suuth }
-                      :b5 { :controller :norr :id :b5 ::logical-pos [ -1 2 ] ::planets #{ :cicerus } ::system :cicerus }
-                      :c1 { :controller :hacan :id :c1 ::logical-pos [ 0 -2 ] ::planets #{  } ::system :wormhole-b }
-                      :c2 { :id :c2 ::logical-pos [ 0 -1 ] ::planets #{ :ptah } ::system :ptah }
-                      :c3 { :id :c3 ::logical-pos [ 0 0 ] ::planets #{ :bellatrix :tsion } ::system :tsion-bellatrix }
-                      :c4 { :id :c4 ::logical-pos [ 0 1 ] ::planets #{ :chnum } ::system :chnum }
-                      :c5 { :id :c5 ::logical-pos [ 0 2 ] ::planets #{  } ::system :ion-storm }
-                      :d1 { :id :d1 ::logical-pos [ 1 -2 ] ::planets #{ :parzifal } ::system :parzifal }
-                      :d2 { :id :d2 ::logical-pos [ 1 -1 ] ::planets #{  } ::system :asteroid-field }
-                      :d3 { :activated { :hacan true :naalu true } :id :d3 ::logical-pos [ 1 0 ] ::planets #{  } ::system :empty }
-                      :d4 { :activated { :hacan true :naalu true } :id :d4 ::logical-pos [ 1 1 ] ::planets #{  } ::system :empty }
-                      :e1 { :id :e1 ::logical-pos [ 2 -2 ] ::planets #{  } ::system :wormhole-a }
-                      :e2 { :controller :naalu :id :e2 ::logical-pos [ 2 -1 ] ::planets #{ :martinez :sulla } ::system :sulla-martinez }
+                ::map {   :a3 { :controller :hacan :id :a3 ::logical-pos [ -2 0 ] ::system :kobol }
+                      :a4 { :activated { :norr true } :id :a4 ::logical-pos [ -2 1 ]  ::system :coorneeq-resculon }
+                      :a5 { :id :a5 ::logical-pos [ -2 2 ] ::system :kazenoeki }
+                      :b2 { :activated { :norr true } :controller :hacan :id :b2 ::logical-pos [ -1 -1 ] ::system :machall-sorkragh }
+                      :b3 { :id :b3 ::logical-pos [ -1 0 ] ::system :tequran-torkan }
+                      :b4 { :id :b4 ::logical-pos [ -1 1 ] ::system :suuth }
+                      :b5 { :controller :norr :id :b5 ::logical-pos [ -1 2 ] ::system :cicerus }
+                      :c1 { :controller :hacan :id :c1 ::logical-pos [ 0 -2 ] ::system :wormhole-b }
+                      :c2 { :id :c2 ::logical-pos [ 0 -1 ] ::system :ptah }
+                      :c3 { :id :c3 ::logical-pos [ 0 0 ] ::system :tsion-bellatrix }
+                      :c4 { :id :c4 ::logical-pos [ 0 1 ] ::system :chnum }
+                      :c5 { :id :c5 ::logical-pos [ 0 2 ] ::system :ion-storm }
+                      :d1 { :id :d1 ::logical-pos [ 1 -2 ] ::system :parzifal }
+                      :d2 { :id :d2 ::logical-pos [ 1 -1 ] ::system :asteroid-field }
+                      :d3 { :activated { :hacan true :naalu true } :id :d3 ::logical-pos [ 1 0 ] ::system :empty }
+                      :d4 { :activated { :hacan true :naalu true } :id :d4 ::logical-pos [ 1 1 ] ::system :empty }
+                      :e1 { :id :e1 ::logical-pos [ 2 -2 ] ::system :wormhole-a }
+                      :e2 { :controller :naalu :id :e2 ::logical-pos [ 2 -1 ] ::system :sulla-martinez }
                       :e3 { :id :e3 ::logical-pos [ 2 0 ] ::planets #{ :sem-lore } ::system :sem-lore } }
                 ::planets {
                           :bellatrix { :controller nil :id :bellatrix :fresh true }

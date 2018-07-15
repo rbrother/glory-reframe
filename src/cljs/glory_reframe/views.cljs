@@ -11,18 +11,18 @@
   (let [ board @(re-frame/subscribe [:board] )]
     (map-svg/render-map-background board)   ))
 
-(defn planet-units [ piece-id planet-id ]
-  (let [ { planet-loc :loc } @(re-frame/subscribe [:planet planet-id])
-        units @(re-frame/subscribe [:ground-units-at piece-id planet-id])]
+(defn planet-units [ piece-id [ planet-id { planet-loc :loc } ] ]
+  (let [ units @(re-frame/subscribe [:ground-units-at piece-id planet-id])]
     (map-svg/units-svg units (partial map-svg/planet-units-locs planet-loc))    ))
 
 (defn board-piece-units [ piece-id ]
   #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
-  (let [ piece @(re-frame/subscribe [ :board-piece piece-id ] )
-         planet-count (count (get piece :glory-reframe.map/planets []))
-        space-figures @(re-frame/subscribe [ :pieces-to-render-at piece-id ] )
-        { logical-pos :glory-reframe.map/logical-pos planets :glory-reframe.map/planets } piece
-        center (utils/mul-vec systems/tile-size 0.5) ]
+  (let [ board-piece @(re-frame/subscribe [ :board-piece piece-id ] )
+         { logical-pos :glory-reframe.map/logical-pos system-id :glory-reframe.map/system } board-piece
+         { planets :planets } (systems/all-systems system-id)
+         planet-count (count (or planets []))
+         space-figures @(re-frame/subscribe [ :pieces-to-render-at piece-id ] )
+         center (utils/mul-vec systems/tile-size 0.5) ]
     (svg/g {:translate (map + (systems/screen-loc logical-pos) center)}
            (concat (map-svg/units-svg space-figures (partial map-svg/default-ship-locs planet-count))
                    (mapcat (partial planet-units piece-id) planets)   ))))
