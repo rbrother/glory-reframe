@@ -450,7 +450,15 @@
 
 (def all-systems (utils/index-by-id all-systems-list))
 
-(def all-planets-map (->> all-systems-list (filter :planets) (map :planets) (apply merge)) )
+(defn- add-system-id [system-id planets]
+  (utils/map-map-values #(assoc % :system-id system-id) planets))
+
+(defn- system-name-to-planets [ { system-id :id :as system } ]
+  (update-in system [:planets] (partial add-system-id system-id)))
+
+(def all-planets-map (->> all-systems-list (filter :planets)
+                          (map system-name-to-planets)
+                          (map :planets) (apply merge)) )
 
 (def all-planets-set (utils/vals-with-id all-planets-map))
 

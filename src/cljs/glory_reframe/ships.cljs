@@ -76,18 +76,18 @@
   (inc (get-in game-state [ :ship-counters type ] 0)))
 
 ; Resolves into { :location :a1 :planet :aah } (planet can be also nil)
-(defn- resolve-location [ loc unit-type { board :glory-reframe.map/map planets :glory-reframe.map/planets :as game } ]
+(defn- resolve-location [ loc unit-type { board :glory-reframe.map/map } ]
+  #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
   (let [ ship? (= :ship ((all-unit-types unit-type) :type))
-         is-system? (contains? (set (board/all-systems game)) loc) ]
+         system-loc (board/get-system-loc board loc)
+         system-loc-of-planet (board/find-planet-loc board loc)]
     (cond
       ; :a1 (system-loc) for ships
       (and ship? (board loc)) { :location loc }
       ; :aah, :arinam-meer (system-id) for ships
-      (and ship? is-system?) { :location (board/get-system-loc board loc) }
+      (and ship? system-loc) { :location system-loc }
       ; :aah (planet-id) for ground-units
-      (and (not ship?) (planets loc)) { :location (board/find-planet-loc board loc) :planet loc }
-      ; :a1 (system-loc) for ground-units when only 1 planet in the system
-      (and (not ship?) (board loc)) { :location loc :planet (first ((board loc) :glory-reframe.map/planets)) }
+      (and (not ship?) system-loc-of-planet) { :location system-loc-of-planet :planet loc }
       :else (throw (str "Cannot resolve location " loc " for unit type " unit-type))  )))
 
 (defn- new-unit [ unit-id loc-id owner type game ]

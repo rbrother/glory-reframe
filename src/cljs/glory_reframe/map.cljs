@@ -179,17 +179,14 @@
 
 ;-------------------- map query --------------------------
 
-(defn get-loc-of [ board system-predicate ]
-  (ffirst (filter (fn [ [ system-id system ] ] (system-predicate system)) board)))
-
 ; eg. :abyz-fria -> :a3
 (defn get-system-loc [ board system-id ]
-  (get-loc-of board (fn [ { system ::system } ] (= system system-id))))
+  (some (fn [ [ loc-id { system ::system } ] ] (if (= system system-id) loc-id nil)) board))
 
 ; eg. :fria -> :a3
 (defn find-planet-loc [ board planet ]
-  { :post [ (not (nil? %)) ] }
-  (get-loc-of board (fn [ { planets ::planets } ] (and planets (contains? planets planet)))))
+  (let [system-id (->> systems/all-planets-map (planet) :system-id)]
+    (get-system-loc board system-id)   ))
 
 (defn all-systems [ game ] (map ::system (vals (game :map))))
 
