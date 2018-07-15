@@ -84,9 +84,8 @@
                           :kobol { :controller :hacan :id :kobol :fresh true }
                           :machall { :controller :hacan :id :machall :fresh true }
                           :martinez { :controller :naalu :id :martinez :fresh true }
-                          :parzifal { :controller nil :id :parzifal :fresh true }
                           :ptah { :controller nil :id :ptah :fresh false }
-                          :resculon { :controller nil :id :resculon :fresh false }
+                          :resculon { :controller :hacan :id :resculon :fresh false }
                           :sem-lore { :controller nil :id :sem-lore :fresh false }
                           :sorkragh { :controller :hacan :id :sorkragh :fresh false }
                           :sulla { :controller :naalu :id :sulla :fresh false }

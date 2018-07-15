@@ -34,20 +34,25 @@
   (fn [ [ _ loc-id ] _ ] (re-frame/subscribe [:units-at loc-id]) )
   (fn [ units _ ] (remove :planet units))    )
 
-(defn piece-to-flag [ { id :id controller :controller } ]
-  (if controller
-    [ {:id id :location id :owner controller :type :flag} ]
-    []  ))
+(defn add-flag-figure [ units { id :id controller :controller } ]
+  (if (and controller (empty? units))
+    (conj units {:id id :location id :owner controller :type :flag})
+    units))
 
 (re-frame/reg-sub :pieces-to-render-at
   (fn [ [ _ loc-id ] _ ] [ (re-frame/subscribe [:ships-at loc-id])
                           (re-frame/subscribe [:board-piece loc-id]) ]   )
-  (fn [ [ships board-piece] _ ]
-    (concat ships (piece-to-flag board-piece)))   )
+  (fn [ [ships board-piece] _ ] (add-flag-figure ships board-piece)  ))
 
 (re-frame/reg-sub :ground-units-at
   (fn [ [ _ loc-id planet ] _ ] (re-frame/subscribe [:units-at loc-id]) )
   (fn [ units [ _ loc-id planet ] ] (filter #(= planet (% :planet)) units))    )
+
+(re-frame/reg-sub :pieces-to-render-at-planet
+  (fn [ [ _ loc-id planet-id ] _ ] [
+      (re-frame/subscribe [:ground-units-at loc-id planet-id])
+      (re-frame/subscribe [:planet-raw planet-id]) ] )
+  (fn [ [ units planet ] _ ] (add-flag-figure units planet)   ))
 
 (re-frame/reg-sub :strategies-raw
   (fn [ { { strategies :strategies } :game-state } ] strategies))
@@ -59,7 +64,11 @@
     (sort-by :order (clojure.set/join strategies-raw strat/all-strategies-arr)    )))
 
 (re-frame/reg-sub :planets-raw
-                  (fn [ { { planets :glory-reframe.map/planets } :game-state } ] planets))
+  (fn [ { { planets :glory-reframe.map/planets } :game-state } ] planets))
+
+(re-frame/reg-sub :planet-raw
+  :<- [ :planets-raw ]
+  (fn [ planets-raw [ _ planet-id ] ] (planets-raw planet-id))  )
 
 (defn- amend-planet [ { id :id :as planet } ]
   (merge planet (systems/all-planets-map id)))

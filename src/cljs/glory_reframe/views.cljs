@@ -12,8 +12,8 @@
     (map-svg/render-map-background board)   ))
 
 (defn planet-units [ piece-id [ planet-id { planet-loc :loc } ] ]
-  (let [ units @(re-frame/subscribe [:ground-units-at piece-id planet-id])]
-    (map-svg/units-svg units (partial map-svg/planet-units-locs planet-loc))    ))
+  (let [ figures @(re-frame/subscribe [:pieces-to-render-at-planet piece-id planet-id])]
+    (map-svg/units-svg figures (partial map-svg/planet-units-locs planet-loc))    ))
 
 (defn board-piece-units [ piece-id ]
   #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
