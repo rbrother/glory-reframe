@@ -210,6 +210,9 @@
   { :pre [ (contains? board loc-id) (keyword? system-id) ] }
   (update-in board [ loc-id ] swap-piece-system system-id))
 
+(spec/fdef swap-system :args (spec/cat :board :glory-reframe.map/board
+                                       :pars (spec/tuple keyword? keyword?) ))
+
 (defn random-systems [ board & opt ]
   (let [ planet-system-ratio (or (first opt) 0.70)
          systems (systems/pick-random-systems (count board) planet-system-ratio)

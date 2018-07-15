@@ -15,7 +15,7 @@
   (let [ all-planets
         (->>  board (vals) (map :glory-reframe.map/planets)
               (map seq) (flatten) (remove nil?)
-              (map (fn [id] { :id id :controller nil }))  ) ]
+              (map (fn [id] { :id id :controller nil :fresh true }))  ) ]
     (assoc game :glory-reframe.map/planets (utils/index-by-id all-planets))  ))
 
 (defn- board-command [ board-func ]
@@ -49,7 +49,7 @@
 (defn set-systems-random [ & opt ] (board-command #(apply board/random-systems % opt)))
 
 (defn set-system [ loc-id system-id ]
-  (board-command #(board/swap-system % [ loc-id system-id ] )))
+  (board-command #(board/swap-system % [ (keyword loc-id) (keyword system-id) ] )))
 
 (defn del-system [ loc-id ]
   (board-command #(dissoc % loc-id)))
