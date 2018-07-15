@@ -43,7 +43,6 @@
   (fn [ [ _ loc-id ] _ ] [ (re-frame/subscribe [:ships-at loc-id])
                           (re-frame/subscribe [:board-piece loc-id]) ]   )
   (fn [ [ships board-piece] _ ]
-    (println ships board-piece)
     (concat ships (piece-to-flag board-piece)))   )
 
 (re-frame/reg-sub :ground-units-at
