@@ -18,9 +18,10 @@
 
 (spec/def ::planet (spec/keys :req-un [ ::controller ::id ::fresh ] ))
 
-(spec/def ::planets coll? )            ; #{ :torkan :tequran }
+(spec/def ::system-planets coll? )            ; #{ :torkan :tequran }
 
-(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ::planets ]))
+(spec/def ::board-piece (spec/keys :req [ ::logical-pos ::system ]
+                                   :opt-un [ ::system-planets ]  ))
 
 (spec/def ::board (spec/map-of keyword? ::board-piece ) )
 
@@ -34,7 +35,7 @@
 
 (spec/def ::app-db (spec/keys :req-un [ ::game-state ]))
 
-(def test-map
+(def test-game
   { :name "Sandbox"
     :command-to-execute nil
     :game-state {
