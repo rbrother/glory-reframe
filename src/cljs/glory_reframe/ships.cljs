@@ -5,7 +5,8 @@
             [glory-reframe.views.html :as html]
             [glory-reframe.views.svg :as svg]
             [glory-reframe.races :as races]
-            [glory-reframe.utils :as utils]    ))
+            [glory-reframe.utils :as utils]
+            [clojure.string :as str]))
 
 (def all-unit-types-arr
   [ { :id :fi :type :ship :name "Fighter"     :individual-ids false :image-name "Fighter"   :image-size [ 50 36 ] }
@@ -31,10 +32,15 @@
 
 ;----------------------- units rendering ----------------------
 
+(defn- player-flag-url [ race-id ]
+  (str html/resources-url "FlagWavy/Flag-Wavy-" (str/capitalize (name race-id)) ".png")  )
+
+(defn player-flag [ race-id ] [ :img {:src (player-flag-url race-id) } ] )
+
 (defn ship-image-url [ type race ]
   { :pre [ (valid-unit-type? type) ] }
   (if (= type :flag)
-    (str html/resources-url "FlagWavy/Flag-Wavy-" (name race) ".png")
+    (player-flag-url race)
     ; Regular unit types
     (let [{image-name :image-name} (all-unit-types type)
           {color :unit-color} (races/all-races race)]

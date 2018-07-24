@@ -8,18 +8,15 @@
 
 (defn- fighter-image [ race-id ] [ :img { :src (ships/ship-image-url :fi race-id) } ] )
 
-(defn- player-flag [ race-id ] [ :img {:src (str html/resources-url "FlagWavy/Flag-Wavy-" (name race-id) ".png")} ] )
-
 (defn- player-row-data [ { race-id :glory-reframe.races/id tg :tg ac :ac pc :pc cc :command-pool sa :strategy-alloc fs :fleet-supply
                          strategies :strategies player-planets :planets player-systems :systems } ]
-  ;  {:post [ (do (println (utils/pretty-pr %)) true) ] }
     (into [ :tr ]
           (html/td-items
             [(apply min (map :order strategies))
              (into [:div] (->> strategies (map :id) (map (fn [s] [:div s]))))
              (str/capitalize (name race-id))
              (fighter-image race-id)
-             (player-flag race-id)
+             (ships/player-flag race-id)
              "VP"
              cc
              fs
@@ -60,7 +57,7 @@
         race (races/all-races race-id) ]
     [ :div
      [ :h3 (race :name) " - " (name race-id)
-      (fighter-image race-id) (player-flag race-id) ]
+      (fighter-image race-id) (ships/player-flag race-id) ]
      [ :div { :style { :margin-left "1cm" }  }
       [ :div "Strategy cards: xxx, yyy" ]
       (into [ :div (count acs) " Action cards: " ]
