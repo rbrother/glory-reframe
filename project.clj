@@ -5,12 +5,12 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.10.0-alpha4"]
-                 [org.clojure/clojurescript "1.10.238" :scope "provided"]
-                 [com.cognitect/transit-clj "0.8.309"]
+                 [org.clojure/clojurescript "1.10.238" :exclusions [com.fasterxml.jackson.core/jackson-core] :scope "provided"]
+                 [com.cognitect/transit-clj "0.8.309" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [ring "1.6.3"]
                  [ring/ring-defaults "0.3.1"]
                  [ring/ring-codec "1.1.1"]
-                 [ring/ring-json "0.4.0"]
+                 [ring/ring-json "0.4.0" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [bk/ring-gzip "0.3.0"]
                  [radicalzephyr/ring.middleware.logger "0.6.0"]
                  [clj-logging-config "1.9.12"]
@@ -21,9 +21,18 @@
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [http-kit "2.3.0"]
                  [re-frame "0.10.5"]
-                 [metosin/compojure-api "1.1.11"]
+                 [metosin/compojure-api "1.1.11" :exclusions [cheshire clj-time prismatic/schema com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/data.json "0.2.6"]
-                 [day8.re-frame/http-fx "0.1.6"]]
+                 [day8.re-frame/http-fx "0.1.6" :exclusions [com.fasterxml.jackson.dataformat/jackson-dataformat-smile cheshire com.fasterxml.jackson.core/jackson-core]]
+                 [com.google.cloud/google-cloud-datastore "1.2.3" 
+				    :exclusions [io.netty/netty-codec-http2 
+								 io.grpc/grpc-core 
+								 com.google.http-client/google-http-client-jackson2
+								 com.google.protobuf/protobuf-java
+								 com.google.protobuf/protobuf-java-util] ]
+				[com.google.http-client/google-http-client-jackson2 "1.23.0"]				 
+								 
+								 ]
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-environ "1.1.0"]
