@@ -1,5 +1,5 @@
 (ns glory-reframe.database
-  (:import (com.google.cloud.datastore DatastoreOptions Entity)))
+  (:import (com.google.cloud.datastore DatastoreOptions Entity StringValue)))
 
 ; Javadoc: https://googlecloudplatform.github.io/google-cloud-java/google-cloud-clients/apidocs/index.html
 ; Higher level API docs: https://cloud.google.com/datastore/docs/concepts/entities
@@ -16,16 +16,35 @@
 ; glory-reframe.database=> datastore
 ; #object[clojure.lang.Namespace 0x54b7e0f0 "glory-reframe.database"]
 
+; General funcs for google datastore
+
 (defonce datastore-options (DatastoreOptions/getDefaultInstance))
 
 (defonce datastore (.getService datastore-options))
 
 (def new-key-factory (-> datastore (.newKeyFactory)))
 
+(defn ds-get [key] (-> datastore (.get key)))
+
+(defn ds-put [entity] (-> datastore (.put entity)))
+
+; String can have Up to 1,500 bytes if property is indexed, up to 1 MB otherwise.
+(defn create-text [str]
+  (-> (StringValue/newBuilder str)
+      (.setExcludeFromIndexes true)
+      (.build)))
+
+(defn set-attr [entity-builder [ key val ]] (.set entity-builder (name key) val))
+
+(defn build-entity [ source-key-or-entity attrs-map ]
+  (let [ builder (Entity/newBuilder source-key-or-entity) ]
+    (.build (reduce set-attr builder attrs-map))    ))
+
+; Game-specific stuff
+
 (def game-key-factory (-> new-key-factory (.setKind "glory-of-empires-game")))
 
-(defn get-game-entity [ game-id ]
-  (-> datastore (.get (.newKey game-key-factory game-id))))
+(defn get-game-entity [ game-id ] (ds-get (.newKey game-key-factory game-id)))
 
 (defn get-game [ game-id ]
   (-> game-id
@@ -35,24 +54,11 @@
 
 (defn get-sandbox-game [] (get-game 5629499534213120) )
 
-(defn create-game-entity [game]
-  (-> (.newKey game-key-factory)
-      (Entity/newBuilder)
-      (.set "game-state" (str game))
-      (.build)))
-
-(defn save-new-game [ game ]
-  (-> datastore (.put (create-game-entity game))))
+(defn save-new-game [game]
+  (ds-put (build-entity (.newKey game-key-factory) {:game-state (create-text (str game))})))
 
 ; Updating is based on making a new builder based on copy of existing Entity (which is immutable! :-)
-(defn updated-game [ game-state id ]
-  (-> (get-game-entity id)
-      (Entity/newBuilder)
-      (.set "game-state" (str game-state))
-      (.build)))
-
 (defn update-game [ game-state id ]
-  (-> datastore (.put (updated-game game-state id))))
-
+  (ds-put (build-entity (get-game-entity id) {:game-state (create-text (str game-state))})))
 
 ; datastore.delete(taskKey);
