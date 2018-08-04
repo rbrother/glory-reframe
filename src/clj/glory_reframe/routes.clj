@@ -37,7 +37,7 @@
 
 ; Sente Websocket IO
 (defn message-received! [{:keys [id client-id ?data]}]
-  (println "handle-message! " id client-id ?data)  )
+  (println "Server handling message from client: " id client-id ?data)  )
 
 (defn send-to-one-client [client-id message-keyword data]
   (chsk-send! client-id [message-keyword data]))

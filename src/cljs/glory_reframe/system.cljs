@@ -1,6 +1,7 @@
 (ns glory-reframe.system
   (:require [com.stuartsierra.component :as component]
-            [glory-reframe.components.ui :refer [new-ui-component]]))
+            [glory-reframe.components.ui :refer [new-ui-component]]
+            [glory-reframe.websocket :as ws]))
 
 (declare system)
 
@@ -12,9 +13,11 @@
   (set! system (new-system)))
 
 (defn start []
+  (ws/start-router!)
   (set! system (component/start system)))
 
 (defn stop []
+  (ws/stop-router!)
   (set! system (component/stop system)))
 
 (defn ^:export go []
