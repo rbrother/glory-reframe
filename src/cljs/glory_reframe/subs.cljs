@@ -6,7 +6,7 @@
             [glory-reframe.utils :as utils]
             [cljs.spec.alpha :as spec]))
 
-(re-frame/reg-sub :game-name (fn [db] (:name db)))
+(re-frame/reg-sub :game-name (fn [ { { name :name } :game-state } ] name))
 
 (re-frame/reg-sub :command-to-execute (fn [db] (:command-to-execute db)))
 

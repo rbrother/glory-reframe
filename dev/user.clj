@@ -11,7 +11,8 @@
             [glory-reframe.components.shell-component :refer [shell-component]]
             [glory-reframe.config :refer [config]]
             [clojure.spec.test.alpha :as stest]
-            [clojure.spec.alpha :as spec]))
+            [clojure.spec.alpha :as spec]
+            [glory-reframe.database :as db]))
 
 (defn dev-system []
   (let [config (config)]
@@ -32,7 +33,10 @@
 ;; get scrubbed from the namespace declaration
 (def start reloaded.repl/start)
 (def stop reloaded.repl/stop)
-(def go reloaded.repl/go)
+(defn go []
+  (db/create-connection)                          ; dirty hack. TODO: define as component
+  (glory-reframe.routes/start-router!)            ; dirty hack. TODO: define as component
+  (reloaded.repl/go))
 (def reset reloaded.repl/reset)
 (def reset-all reloaded.repl/reset-all)
 

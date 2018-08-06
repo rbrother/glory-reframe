@@ -42,7 +42,7 @@
        [ :td
         [:input {:type  "text" :style {:width "300px"} :id "command" :autoFocus "true"
                  :value (or @(subscribe [:command-to-execute]) "")
-                 :on-change #(dispatch [:command-to-execute-changed (-> % .-target .-value)])}] ]
+                 :on-change #(dispatch [:command-to-execute-changed (-> % .-target .-value)])  }] ]
        [ :td [:button {:type "button" :on-click #(dispatch [:execute-command]) } "Execute"] ]
        [ :td "Examples" ]
        [ :td command-examples-select ] ]

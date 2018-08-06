@@ -18,15 +18,18 @@
 
 ; General funcs for google datastore
 
-(defonce datastore-options (DatastoreOptions/getDefaultInstance))
+(defonce datastore (atom nil))
 
-(defonce datastore (.getService datastore-options))
+(defn create-connection []
+  (let [ datastore-options (DatastoreOptions/getDefaultInstance) ]
+    (reset! datastore (.getService datastore-options))
+    (println "Database connection made!")))
 
-(def new-key-factory (-> datastore (.newKeyFactory)))
+(defn new-key-factory [] (-> @datastore (.newKeyFactory)))
 
-(defn ds-get [key] (-> datastore (.get key)))
+(defn ds-get [key] (-> @datastore (.get key)))
 
-(defn ds-put [entity] (-> datastore (.put entity)))
+(defn ds-put [entity] (-> @datastore (.put entity)))
 
 ; String can have Up to 1,500 bytes if property is indexed, up to 1 MB otherwise.
 (defn create-text [str]
@@ -42,9 +45,9 @@
 
 ; Game-specific stuff
 
-(def game-key-factory (-> new-key-factory (.setKind "glory-of-empires-game")))
+(defn game-key-factory [] (-> (new-key-factory) (.setKind "glory-of-empires-game")))
 
-(defn get-game-entity [ game-id ] (ds-get (.newKey game-key-factory game-id)))
+(defn get-game-entity [ game-id ] (ds-get (.newKey (game-key-factory) game-id)))
 
 (defn get-game [ game-id ]
   (-> game-id
@@ -55,7 +58,7 @@
 (defn get-sandbox-game [] (get-game 5629499534213120) )
 
 (defn save-new-game [game]
-  (ds-put (build-entity (.newKey game-key-factory) {:game-state (create-text (str game))})))
+  (ds-put (build-entity (.newKey (game-key-factory)) {:game-state (create-text (str game))})))
 
 ; Updating is based on making a new builder based on copy of existing Entity (which is immutable! :-)
 (defn update-game [ game-state id ]
