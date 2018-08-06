@@ -126,12 +126,6 @@
            :gf9 { :id :gf9 :location :e2 :owner :naalu :planet :sulla :type :gf } } }
   )
 
-(def test-game
-  { :name "Sandbox"
-    :command-to-execute nil
-    :game-state sand-box-game }  )
-
-
 (def good-letters [ "a", "b", "c", "d", "e", "f", "g",
               "h", "j", "k", "m", "n", "p",
               "r", "s", "t", "u", "v", "z", "y", "z" ] )

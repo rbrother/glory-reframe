@@ -3,7 +3,8 @@
             [glory-reframe.db :as db]
             [glory-reframe.commands :as commands]
             [clojure.spec.alpha :as spec]
-            [clojure.spec.test.alpha :as stest]))
+            [clojure.spec.test.alpha :as stest]
+            [glory-reframe.websocket :as ws]))
 
 ; Safe modification version with SPEC
 (defn- modify-db [ db func ]
@@ -18,10 +19,23 @@
            :args (spec/cat :game-state :glory-reframe.map/game-state :func fn?)
            :ret :glory-reframe.map/game-state)
 
+(re-frame/reg-fx
+  :websocket-send
+  (fn [ { type :type data :data }]
+    (println type data)
+    (ws/send-message! [type data])  ))
+
 (re-frame/reg-event-db
  :initialize-db
  (fn  [_ _]
    db/default-db))
+
+(re-frame/reg-event-fx
+  :load-game
+  (fn [ { db :db } _ ]
+    { :db db
+      :websocket-send { :type :glory-reframe.websocket/load-game
+                        :data 5629499534213120 }  }))
 
 (re-frame/reg-event-db
   :select-command-example
