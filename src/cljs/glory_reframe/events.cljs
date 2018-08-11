@@ -38,6 +38,18 @@
                         :data 5629499534213120 }  }))
 
 (re-frame/reg-event-db
+  :game-loaded
+  (fn [ db [ _ game-data ]]
+    (assoc db :game-state game-data)))
+
+(re-frame/reg-event-fx
+  :load-game
+  (fn [ { db :db } _ ]
+    { :db db
+      :websocket-send { :type :glory-reframe.websocket/load-game
+                        :data 5629499534213120 }  }))
+
+(re-frame/reg-event-db
   :select-command-example
   (fn [db [ _ command ] ]
     (assoc db :command-to-execute command)))

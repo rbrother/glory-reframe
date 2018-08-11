@@ -1,5 +1,6 @@
 (ns glory-reframe.websocket
-  (:require [taoensso.sente :as sente]))
+  (:require [taoensso.sente :as sente]
+            [re-frame.core :refer [dispatch]]))
 
 (let [connection (sente/make-channel-socket! "/ws" {:type :auto})]
   (def ch-chsk (:ch-recv connection))                       ; ChannelSockets receive channel
@@ -24,7 +25,9 @@
       (default-event-handler ev-msg))))
 
 (defn message-handler [ { [ key message ] :?data } ]
-  (println "Client handling message from server: " key message))
+  (case key
+    :glory-reframe.websocket/game-loaded (dispatch [:game-loaded message])
+    (println "Client unhandled message from server: " key message)))
 
 (def router (atom nil))
 
