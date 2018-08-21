@@ -27,15 +27,18 @@
 (defn message-handler [ { [ key message ] :?data } ]
   (case key
     :glory-reframe.websocket/game-loaded (dispatch [:game-loaded message])
+    :glory-reframe.websocket/game-modified (dispatch [:game-modified message])
     (println "Client unhandled message from server: " key message)))
 
 (def router (atom nil))
 
 (defn stop-router! []
+  (println "Client stopping Sente websocket-router")
   (when-let [stop-f @router] (stop-f)))
 
 (defn start-router! []
   (stop-router!)
+  (println "Client starting Sente websocket-router")
   (reset! router
     (sente/start-chsk-router!
       ch-chsk

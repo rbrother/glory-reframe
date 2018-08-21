@@ -42,12 +42,10 @@
   (fn [ db [ _ game-data ]]
     (assoc db :game-state game-data)))
 
-(re-frame/reg-event-fx
-  :load-game
-  (fn [ { db :db } _ ]
-    { :db db
-      :websocket-send { :type :glory-reframe.websocket/load-game
-                        :data 5629499534213120 }  }))
+(re-frame/reg-event-db
+  :game-modified
+  (fn [ db [ _ game-data ]]
+    (assoc db :game-state game-data)))
 
 (re-frame/reg-event-db
   :select-command-example
@@ -65,11 +63,14 @@
         command-getter (command-getters command-id)]
     (or command-getter (throw (str "Command function not found: " command-id)))))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
   :execute-command
-  (fn [ { command :command-to-execute game-state :game-state :as db } [ _ _ ] ]
+  (fn [ { { command :command-to-execute game-state :game-state :as db } :db } _ ]
     (println "Executing command: " command)
-     (let [[command-id & pars] (cljs.reader/read-string (str "[" command "]"))
-           command-func (apply (get-command-fn command-id) pars)
-           role :game-master]
-       (assoc db :game-state (modify-db game-state #(command-func % role))    ))))
+    (let [[command-id & pars] (cljs.reader/read-string (str "[" command "]"))
+          command-func (apply (get-command-fn command-id) pars)
+          role :game-master
+          new-game-state (modify-db game-state #(command-func % role)) ]
+      { :db (assoc db :game-state new-game-state)
+        :websocket-send { :type :glory-reframe.websocket/update-game
+                          :data new-game-state } }   )))
