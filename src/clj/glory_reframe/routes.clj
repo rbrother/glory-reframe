@@ -54,14 +54,15 @@
 (defn clients-to-notify [ clients-info sender-id game-id ]
   {:post [(do (println "clients-to-notify: " (utils/pretty-pr %)) true)]}
   (->> clients-info
-       (filter (fn [[client {game :game}]]
-                 (and (not= client sender-id) (= game game-id))))
+       (filter (fn [ [ client {game :game} ] ]
+                 (and (= game game-id) (not= client sender-id))))
        (map first)  ))
 
 (defn update-game [client-id { game-id :database-id :as game-data}]
-  (state/set-game game-data)
+  ; First notify other clients (for fast response), then save to database
   (doseq [client-id (clients-to-notify @client-info client-id game-id)]
-    (send-to-one-client client-id :glory-reframe.websocket/game-modified game-data)))
+    (send-to-one-client client-id :glory-reframe.websocket/game-modified game-data))
+  (state/set-game game-data))
 
 ; Sente Websocket IO
 (defn message-received! [{:keys [id client-id ?data]}]

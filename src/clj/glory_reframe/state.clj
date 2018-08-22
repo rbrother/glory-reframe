@@ -14,5 +14,9 @@
       (throw (Exception. "my exception message"))  )))
 
 (defn set-game [ { game-id :database-id :as game-data} ]
-  (swap! server-state assoc-in [:games game-id] game-data))
-; TODO: save to DB
+  (let [game-swapper (fn [state]
+                       (db/save-game game-data)
+                       (assoc-in state [:games game-id] game-data))]
+    ; We swap with function that includes both saving to db and atom-exchange,
+    ; merging both to single atomic operation.
+    (swap! server-state game-swapper)))

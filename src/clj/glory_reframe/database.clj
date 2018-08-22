@@ -60,8 +60,7 @@
 (defn save-new-game [game]
   (ds-put (build-entity (.newKey (game-key-factory)) {:game-state (create-text (str game))})))
 
-; Updating is based on making a new builder based on copy of existing Entity (which is immutable! :-)
-(defn update-game [ game-state id ]
-  (ds-put (build-entity (get-game-entity id) {:game-state (create-text (str game-state))})))
+(defn save-game [ { game-id :database-id :as game-data} ]
+  (ds-put (build-entity (.newKey (game-key-factory) game-id) {:game-state (create-text (str game-data))})))
 
 ; datastore.delete(taskKey);
