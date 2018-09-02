@@ -16,7 +16,6 @@
     (map-svg/units-svg figures (partial map-svg/planet-units-locs planet-loc))    ))
 
 (defn board-piece-units [ piece-id ]
-  #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
   (let [ board-piece @(subscribe [ :board-piece piece-id ] )
          { logical-pos :glory-reframe.map/logical-pos system-id :glory-reframe.map/system } board-piece
          { planets :planets } (systems/all-systems system-id)
@@ -34,7 +33,6 @@
 (defn board
   ( [ ] (board {}) )
   ( [ opts ]
-   #_{:post [ (do (println (utils/pretty-pr %)) true) ] }
    (println "rendering: board")
     (if (number? opts) (board { :scale opts })
       (let [ board* @(subscribe [:board])

@@ -34,15 +34,20 @@
   (fn [ [ _ loc-id ] _ ] (re-frame/subscribe [:units-at loc-id]) )
   (fn [ units _ ] (remove :planet units))    )
 
-(defn add-flag-figure [ units { id :id controller :controller } ]
-  (if (and controller (empty? units))
-    (conj units {:id id :location id :owner controller :type :flag})
-    units))
+(defn activation-marker [ loc-id race ]
+  {:id (keyword (str (name loc-id) "-" (name race))) :location loc-id :owner race :type :cc} )
+
+(defn add-meta-figures [ units { loc-id :id controller :controller activated :activated } ]
+  (let [flags (if (and controller (empty? units))
+                [{ :id loc-id :location loc-id :owner controller :type :flag} ] [])
+        activators (if activated (keys activated) [])
+        command-counters (map (partial activation-marker loc-id) activators)]
+    (concat units flags command-counters)))
 
 (re-frame/reg-sub :pieces-to-render-at
   (fn [ [ _ loc-id ] _ ] [ (re-frame/subscribe [:ships-at loc-id])
                           (re-frame/subscribe [:board-piece loc-id]) ]   )
-  (fn [ [ships board-piece] _ ] (add-flag-figure ships board-piece)  ))
+  (fn [ [ships board-piece] _ ] (add-meta-figures ships board-piece)  ))
 
 (re-frame/reg-sub :ground-units-at
   (fn [ [ _ loc-id planet ] _ ] (re-frame/subscribe [:units-at loc-id]) )
@@ -52,7 +57,7 @@
   (fn [ [ _ loc-id planet-id ] _ ] [
       (re-frame/subscribe [:ground-units-at loc-id planet-id])
       (re-frame/subscribe [:planet-raw planet-id]) ] )
-  (fn [ [ units planet ] _ ] (add-flag-figure units planet)   ))
+  (fn [ [ units planet ] _ ] (add-meta-figures units planet)   ))
 
 (re-frame/reg-sub :strategies-raw
   (fn [ { { strategies :strategies } :game-state } ] strategies))

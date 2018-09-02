@@ -22,7 +22,8 @@
     { :id :pds :type :ground :name "Planetary Defence System" :individual-ids false  :image-name "PDS" :image-size [ 67 49 ] }
     { :id :sd :type :ground :name "Spacedock" :individual-ids false  :image-name "Spacedock" :image-size [ 76 78 ] }
    ; Special tokens (move elsewhere..?)
-    { :id :flag :type :special :image-name "Flag" :image-size [ 76 43 ] } ] )
+    { :id :flag :type :special :image-name "Flag" :individual-ids true :image-size [ 76 43 ] }
+    { :id :cc :type :special :image-name "CC" :individual-ids true :image-size [ 100 88 ] }     ] )
 
 (def all-unit-types (utils/index-by-id all-unit-types-arr))
 
@@ -37,10 +38,14 @@
 
 (defn player-flag [ race-id ] [ :img {:src (player-flag-url race-id) } ] )
 
+(defn- player-cc-url [ race-id ]
+  (str html/resources-url "CCs/CC-" (str/capitalize (name race-id)) ".png")  )
+
 (defn ship-image-url [ type race ]
   { :pre [ (valid-unit-type? type) ] }
-  (if (= type :flag)
-    (player-flag-url race)
+  (case type
+    :flag (player-flag-url race)
+    :cc (player-cc-url race)
     ; Regular unit types
     (let [{image-name :image-name} (all-unit-types type)
           {color :unit-color} (races/all-races race)]
@@ -50,17 +55,17 @@
   { :pre [ (valid-unit-type? type)
            (not (nil? race))
            (contains? races/all-races race) ] }
-  (let [ { [ width height :as tile-size ] :image-size individual-ships? :individual-ids } (all-unit-types type)
+  (let [ { category :type [ width height :as tile-size ] :image-size individual-ships? :individual-ids } (all-unit-types type)
          center-shift [ 0 (* -0.5 height) ] ; Only need to center vertically. Horizontal centering done at group level
          final-loc (map utils/round-any (map + center-shift loc))
-         id-label (fn [] (svg/double-text (string/upper-case (name id)) [ 0 (+ 20 height) ] { :size 20 }))
+         id-label (if id (svg/double-text (string/upper-case (name id)) [0 (+ 20 height)] {:size 20}))
          count-label (fn [ count ] (svg/double-text (str count) [ width 40 ] { :size 45 } )) ]
-    (svg/g { :translate final-loc }
-       (concat [ (svg/image [0 0] tile-size (ship-image-url type race) (str "unit-" (name (or id type))) ) ]
-               (cond
-                 individual-ships? [ (id-label) ]
-                 (and count (> count 1)) [ (count-label count) ]
-                 :else [ ] )))))
+    (svg/g { :translate final-loc } [
+           (svg/image [0 0] tile-size (ship-image-url type race) (str "unit-" (name (or id type))))
+           (cond
+             (= category :special) nil
+             individual-ships? id-label
+             (and count (> count 1)) (count-label count)   ) ] )))
 
 (defn width [ { type :type count :count :as ship } ]
   (let [ { [ image-width _ ] :image-size } (all-unit-types type)
@@ -71,7 +76,7 @@
 
 (defn group-svg [ [ group [ x y :as loc ] ] ] ; returns [ [:g ... ] [:g ... ] ... ]
   (if (empty? group) []
-    (let [ { type :type count :count :as ship } (first group)
+    (let [ ship (first group)
            next-loc [ (+ x (width ship) 1) y ] ]
       (conj (group-svg [ (rest group) next-loc ] )
             (svg ship loc)))))
