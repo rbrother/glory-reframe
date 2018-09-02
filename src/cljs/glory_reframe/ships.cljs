@@ -58,7 +58,8 @@
   (let [ { category :type [ width height :as tile-size ] :image-size individual-ships? :individual-ids } (all-unit-types type)
          center-shift [ 0 (* -0.5 height) ] ; Only need to center vertically. Horizontal centering done at group level
          final-loc (map utils/round-any (map + center-shift loc))
-         id-label (if id (svg/double-text (string/upper-case (name id)) [0 (+ 20 height)] {:size 20}))
+         id-label (if id (svg/double-text (string/upper-case (name id))
+                                          [(- (/ width 2) 20) (+ 20 height) ] {:size 20}))
          count-label (fn [ count ] (svg/double-text (str count) [ width 40 ] { :size 45 } )) ]
     (svg/g { :translate final-loc } [
            (svg/image [0 0] tile-size (ship-image-url type race) (str "unit-" (name (or id type))))
