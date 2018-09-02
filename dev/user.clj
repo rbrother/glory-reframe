@@ -33,13 +33,10 @@
 ;; get scrubbed from the namespace declaration
 (def start reloaded.repl/start)
 (def stop reloaded.repl/stop)
-(defn go []
-  (db/create-connection)                          ; dirty hack. TODO: define as component
-  (glory-reframe.routes/start-router!)            ; dirty hack. TODO: define as component
-  (reloaded.repl/go))
+(defn go [] (reloaded.repl/go))
 (def reset reloaded.repl/reset)
 (def reset-all reloaded.repl/reset-all)
 
 (stest/instrument)
 
-(spec/check-asserts true)                                   ; does not work here for clojurescript
+(spec/check-asserts true)        ; does not work here for clojurescript

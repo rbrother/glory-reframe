@@ -7,20 +7,21 @@
             [system.components.middleware :refer [new-middleware]]
             [system.components.http-kit :refer [new-web-server]]
             [glory-reframe.config :refer [config]]
-            [glory-reframe.routes :refer [home-routes]]))
+            [glory-reframe.routes :as routes]
+            [glory-reframe.database :as db]))
 
-(defn app-system [config]
+(defn app-system [ { middleware :middleware port :http-port :as config } ]
   (component/system-map
-   :routes     (new-endpoint home-routes)
-   :middleware (new-middleware {:middleware (:middleware config)})
-   :handler    (-> (new-handler)
-                   (component/using [:routes :middleware]))
-   :http       (-> (new-web-server (:http-port config))
-                   (component/using [:handler]))
-   :server-info (server-info (:http-port config))))
+    :routes (->(new-endpoint routes/home-routes) (component/using [:sente]))
+    :middleware (new-middleware { :middleware middleware } )
+    :handler (-> (new-handler) (component/using [ :routes :middleware ]))
+    :http (-> (new-web-server port) (component/using [:handler]))
+    :server-info (server-info port)
+    ; Added components
+    :database (db/new-datastore)
+    :sente (-> (routes/new-sente-component)
+               (component/using [:database]))    ))
 
 (defn -main [& _]
   (let [config (config)]
-    (-> config
-        app-system
-        component/start)))
+    (component/start (app-system config))))

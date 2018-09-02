@@ -1,4 +1,5 @@
 (ns glory-reframe.database
+  (:require [com.stuartsierra.component :as component])
   (:import (com.google.cloud.datastore DatastoreOptions Entity StringValue)))
 
 ; Javadoc: https://googlecloudplatform.github.io/google-cloud-java/google-cloud-clients/apidocs/index.html
@@ -18,18 +19,16 @@
 
 ; General funcs for google datastore
 
-(defonce datastore (atom nil))
-
 (defn create-connection []
   (let [ datastore-options (DatastoreOptions/getDefaultInstance) ]
-    (reset! datastore (.getService datastore-options))
-    (println "Database connection made!")))
+    (println "Creating Google Datastore connection")
+    (.getService datastore-options)))
 
-(defn new-key-factory [] (-> @datastore (.newKeyFactory)))
+(defn new-key-factory [ db-connection ] (-> db-connection (.newKeyFactory)))
 
-(defn ds-get [key] (-> @datastore (.get key)))
+(defn ds-get [ db-connection key] (-> db-connection (.get key)))
 
-(defn ds-put [entity] (-> @datastore (.put entity)))
+(defn ds-put [ db-connection entity] (-> db-connection (.put entity)))
 
 ; String can have Up to 1,500 bytes if property is indexed, up to 1 MB otherwise.
 (defn create-text [str]
@@ -37,30 +36,50 @@
       (.setExcludeFromIndexes true)
       (.build)))
 
-(defn set-attr [entity-builder [ key val ]] (.set entity-builder (name key) val))
+(defn set-attr [ entity-builder [ key val ]] (.set entity-builder (name key) val))
 
 (defn build-entity [ source-key-or-entity attrs-map ]
   (let [ builder (Entity/newBuilder source-key-or-entity) ]
     (.build (reduce set-attr builder attrs-map))    ))
 
+; Stuartsierra Component
+
+(defrecord DatastoreComponent [ db-connection ]
+  component/Lifecycle
+  (start [component]
+    (assoc component :db-connection (create-connection)))
+  (stop [component]
+    (println "Stopping database connection (no op)")
+    (dissoc component :db-connection)  ))
+
+(defn new-datastore []
+  (map->DatastoreComponent {}))
+
 ; Game-specific stuff
 
-(defn game-key-factory [] (-> (new-key-factory) (.setKind "glory-of-empires-game")))
+(defn game-key-factory [ db-connection ]
+  (-> (new-key-factory db-connection) (.setKind "glory-of-empires-game")))
 
-(defn get-game-entity [ game-id ] (ds-get (.newKey (game-key-factory) game-id)))
+(defn get-game-entity [ db-connection game-id ]
+  (ds-get db-connection (.newKey (game-key-factory db-connection) game-id)))
 
-(defn get-game [ game-id ]
-  (-> game-id
-      get-game-entity
+(defn get-game [ { db-connection :db-connection } game-id ]
+  (-> (get-game-entity db-connection game-id)
       (.getString "game-state")
       (read-string)))
 
-(defn get-sandbox-game [] (get-game 5629499534213120) )
+(defn get-sandbox-game [ datastore ] (get-game datastore 5629499534213120) )
 
-(defn save-new-game [game]
-  (ds-put (build-entity (.newKey (game-key-factory)) {:game-state (create-text (str game))})))
+(defn save-new-game [ { db-connection :db-connection } game]
+  (let [ key (.newKey (game-key-factory db-connection))
+         entity (build-entity key {:game-state (create-text (str game))}) ]
+    (ds-put db-connection entity)   ))
 
-(defn save-game [ { game-id :database-id :as game-data} ]
-  (ds-put (build-entity (.newKey (game-key-factory) game-id) {:game-state (create-text (str game-data))})))
+(defn save-game [ { db-connection :db-connection } { game-id :database-id :as game-data} ]
+  (let [ key (.newKey (game-key-factory db-connection) game-id)
+         entity (build-entity key {:game-state (create-text (str game-data))}) ]
+    (ds-put db-connection entity)   ))
 
 ; datastore.delete(taskKey);
+
+; GQL query for getting all games: SELECT * FROM `glory-of-empires-game`
