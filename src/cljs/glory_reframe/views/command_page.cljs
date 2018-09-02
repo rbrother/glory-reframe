@@ -14,7 +14,7 @@
                 "del-system c4"
                 "set-players hacan \"abc\" norr \"xyz\" naalu \"123\""
                 "---- unit operations ----"
-                "activate d3"
+                "activate hacan d3"
                 "new hacan ca b2"
                 "new norr ca cr 2 fi a2"
                 "new hacan 2 gf meer"

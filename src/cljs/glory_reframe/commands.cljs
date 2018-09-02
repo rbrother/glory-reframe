@@ -117,11 +117,12 @@
 (defn activate [ & pars ]
   (player-optional-command pars
      (fn [ game _ player [ location ] ]
-       { :pre [ (-> game :map location) ] }
-       (assert (> (-> game :players player :command-pool) 0))
-       (-> game
-           (update-in [ :map location :activated ] assoc player true )
-           (update-in [ :players player :command-pool ] dec)     ))))
+       (let [loc (keyword location)]
+         (assert (-> game :glory-reframe.map/map loc))
+         (assert (> (-> game :players player :command-pool) 0))
+         (-> game
+             (update-in [:glory-reframe.map/map loc :activated] assoc player true)
+             (update-in [:players player :command-pool] dec))))))
 
 ;----------- card-commands commands ------------------
 
